@@ -26,7 +26,7 @@ export default function Home() {
   // }
   return (
     <div className="w-full">
-      <div className="bg-green-100 px-15 ">
+      <div className="bg-green-100 px-15 w-full ">
         <div className="flex flex-wrap text-3xl pt-10">
           <img src={logo} alt="reen bank" />
           <nav className="ml-13 mt-3 flex space-x-10">
