@@ -11,7 +11,7 @@ const AccountCreation = () => {
         <h2 className="text-black text-lg font-bold mb-8">
           Your account <span className="text-gray-500 text-lg font-bold">has been created Successfully!</span>
         </h2>
-        <button onClick={() => navigate("/OverviewPage")} className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg hover:bg-green-600 transition duration-300 mb-6">
+        <button onClick={() => navigate("/overviewpage")} className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg hover:bg-green-600 transition duration-300 mb-6">
           Go to dashboard
         </button>
       </div>
