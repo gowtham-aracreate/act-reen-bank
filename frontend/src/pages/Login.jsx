@@ -1,6 +1,3 @@
-
-
-
 import React, { useState } from 'react';
 import bank_logo from '../assets/logo.png';
 import facebook from '../assets/facebook.png';
