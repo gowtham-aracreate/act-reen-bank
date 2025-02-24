@@ -31,7 +31,7 @@ export default function Home() {
           <img src={logo} alt="reen bank" />
           <nav className="ml-13 mt-3 flex space-x-10">
             <a href="#About" className="cursor-pointer">About</a>
-            <h4 className="cursor-pointer">Contact Us</h4>
+            <a href="#Contact" className="cursor-pointer">Contact Us</a>
           </nav>
           <button className=" w-30 ml-auto border px-6 py-2 rounded-lg text-green-600 font-semibold cursor-pointer">Login</button>
         </div>
@@ -156,7 +156,7 @@ export default function Home() {
         <div className=" pt-20 pb-10 px-15 text-gray-700">
           <div className="flex text-3xl">
             <div className="space-y-3 w-80">
-              <h3 className="text-green-600 font-semibold mb-5">HELP</h3>
+              <div id="Contact" className="text-green-600 font-semibold mb-5">HELP</div>
               <p>Help Center</p>
               <p>Contact Us</p>
               <p>How to Use</p>
