@@ -39,11 +39,11 @@ const Faqs = () => {
         <div className="mt-5  w-530 ">
           {selectedFaq ? (
             <div className="p-5">
-              <h3 className="text-green-600 font-semibold underline decoration-green-400 text-4xl">{faqs.find(faqs => faqs.id === selectedFaq)?.question}</h3>
-              <p className="mt-10 text-3xl text-gray-700">{faqs.find(faqs => faqs.id === selectedFaq)?.answer}</p>
+              <h3 className="text-green-600 font-semibold underline decoration-green-400 text-3xl">{faqs.find(faqs => faqs.id === selectedFaq)?.question}</h3>
+              <p className="mt-10 text-xl text-gray-700">{faqs.find(faqs => faqs.id === selectedFaq)?.answer}</p>
             </div>
           ) : (
-            <p className="text-gray-600 text-3xl">Select a question to see the answer.</p>
+            <p className="text-gray-600 text-xl">Select a question to see the answer.</p>
           )}
         </div>
 
@@ -56,7 +56,7 @@ const Faqs = () => {
               .map((faqs) => (
                 <li key={faqs.id}>
                   <button
-                    className="text-3xl text-blue-600 underline" 
+                    className="ml-10 text-2xl text-blue-600 underline" 
                     onClick={() => setSelectedFaq(faqs.id)}>
                     {faqs.question}&#8594;
                   </button>
