@@ -7,11 +7,22 @@ import Plus from '../assets/plus.svg';
 import Calendar from '../assets/calendar.svg';
 import Layout from '../layout/Layout';
 import Transactions from '../components/Transactions';
+import BalanceCard from '../components/BalanceCard.jsx';
 import Income from '../assets/income.svg';
 import Expense from '../assets/expense.svg';
 
 const OverviewPage = () => {
     const [isHidden, setIsHidden] = useState(false);
+    const [accounts, setAccounts] = useState([
+        { title: "Main Account", amount: 44500 },
+        { title: "School Savings", amount: 44500 },
+        { title: "Holiday Plan", amount: 44500 },
+    ]);
+
+    // Function to add a new account card
+    const addAccount = () => {
+        setAccounts([...accounts, { title: "New Account", amount: 0 }]);
+    };
 
     return (
         <Layout>
@@ -77,19 +88,11 @@ const OverviewPage = () => {
                             </div>
 
 
-                            <div className="grid grid-cols-3 gap-4 mt-2">
-                                <div className="bg-green-100 p-7 rounded-lg text-center shadow-md">
-                                    <p className="text-indigo-900">Main Account</p>
-                                    <p className="text-xl font-bold">₦ 44,500.00</p>
-                                </div>
-                                <div className="bg-green-100 p-7 rounded-lg text-center shadow-md">
-                                    <p className="text-indigo-900">School Savings</p>
-                                    <p className="text-xl font-bold">₦ 44,500.00</p>
-                                </div>
-                                <div className="bg-green-100 p-7 rounded-lg text-center shadow-md">
-                                    <p className="text-indigo-900">Holiday Plan</p>
-                                    <p className="text-xl font-bold">₦ 44,500.00</p>
-                                </div>
+                           {/* Account Cards */}
+                           <div className="grid grid-cols-3 gap-4 mt-2">
+                                {accounts.map((account, index) => (
+                                    <BalanceCard key={index} title={account.title} amount={account.amount} isHidden={isHidden} />
+                                ))}
                             </div>
                         </div>
 
