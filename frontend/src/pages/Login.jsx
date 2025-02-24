@@ -1,15 +1,4 @@
-// import React from 'react'
 
-// function login() {
-//     return (
-//         <div>
-//             <h3>Reen Bank</h3>
-//         </div>
-
-//     )
-// }
-
-// export default login;
 
 
 import React, { useState } from 'react';
@@ -17,6 +6,7 @@ import bank_logo from '../assets/logo.png';
 import facebook from '../assets/facebook.png';
 import instagram from '../assets/instagram.png';
 import twitter from '../assets/twitter.png';
+import backgroundImage from '../assets/background.jpg';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -45,6 +35,20 @@ const Login = () => {
 
     return (
        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <div className=" flex bg-blue-100 pb-25">
             
            <div className='ml-20'>
@@ -129,6 +133,7 @@ const Login = () => {
                 </div>
             
         </div>
+
     );
 };
 
