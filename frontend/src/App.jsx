@@ -1,36 +1,27 @@
-import React from 'react'
-import { useState } from 'react';
-import {BrowserRouter as Router, Routes, Route, BrowserRouter} from 'react-router-dom';
+import React from "react";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import Home from "./pages/home";
+import Faqs from "./pages/faqs";
+import Register from "./pages/register";
+import EmailVerification from "./pages/email";
+import AccountCreation from "./pages/acccreation";
 import Login from './pages/login';
+import OverviewPage from "./pages/OverviewPage";
 
-
-const App = () => {
+function App() {
   return (
     <BrowserRouter>
-    <Router>
-    <Routes>
-      <Route path='/Login' element={<Login/>}/>
-      <Route path='/register' element={<register/>}/>
-    </Routes>
-    </Router>
-    </BrowserRouter>,
-    
-    <Login />
-    
-  )
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/faqs" element={<Faqs />} /> 
+        <Route path="/register" element={<Register />} 
+        <Route path='/Login' element={<Login/>}/>
+        <Route path="/verify-email" element={<EmailVerification />} />
+        <Route path="/create-account" element={<AccountCreation />} />
+        <Route path="/overviewpage" element={<OverviewPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
-export default App
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default App;
