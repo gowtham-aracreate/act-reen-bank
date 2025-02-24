@@ -5,7 +5,7 @@ import Faqs from "./pages/faqs";
 import Register from "./pages/register";
 import EmailVerification from "./pages/email";
 import AccountCreation from "./pages/acccreation";
-// import Login from './pages/login';
+import Login from './pages/login';
 import OverviewPage from "./pages/OverviewPage";
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/faqs" element={<Faqs />} /> 
         <Route path="/register" element={<Register />} />
-        {/* <Route path="/login" element={<Login />} /> */}
+        <Route path="/login" element={<Login />} />
         <Route path="/verify-email" element={<EmailVerification />} />
         <Route path="/create-account" element={<AccountCreation />} />
         <Route path="/overviewpage" element={<OverviewPage />} />
