@@ -1,5 +1,5 @@
 import React from "react";
-//import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReenBank from "../assets/ReenBank.svg";
 import Savings from "../assets/Savings .svg";
 import Loans from "../assets/Loans.svg";
@@ -19,11 +19,11 @@ import Rectangle from "../assets/Rectangle.svg";
 import Faqs from "./faqs";
 
 export default function Home() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // const handleLoginClick =()=> {
-  //    navigate("/Login");
-  // }
+  const handleLoginClick =()=> {
+     navigate("/register");
+  }
   return (
     <div className="w-full">
       <div className="bg-green-100 px-15 ">
@@ -49,12 +49,12 @@ export default function Home() {
               banking with Reen Bank.
             </p>
             <div className="mt-12 space-x-4 text-xl">
-              <button className="bg-green-500 text-white px-6 rounded-lg h-13 cursor-pointer" >Get Started
+              <button className="bg-green-500 text-white px-6 rounded-lg h-13 cursor-pointer" onClick={handleLoginClick} >Get Started
               </button>
-              <button className="border px-6 rounded-lg text-green-600 font-semibold h-13">Learn More &#8594;</button>
+              <a href="#services" className="border px-5 rounded-lg text-green-600 font-semibold pt-3 pb-3">Learn More &#8594;</a>
             </div>
           </div>
-          <div className="ml-12 ">
+          <div className="ml-12  ">
             <img src={ReenBank} alt="Banking" className="w-160 " />
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function Home() {
 
 
       <div className="text-3xl  pt-10 pb-15">
-        <h2 className="text-5xl text-black font-bold mb-13 px-15">Services</h2>
+        <div id="services" className="text-5xl text-black font-bold mb-13 px-15">Services</div>
         <div className=" grid grid-cols-2 gap-12 px-13 ">
           <div>
             <div className="flex">
@@ -177,13 +177,13 @@ export default function Home() {
           </div>
         </div>
         <div className="relative w-full text-white font-semibold">
-          <img src={Rectangle} alt="footer" className="mt-43 w-4xl " />
+          <img src={Rectangle} alt="footer" className="mt-30 w-4xl " />
           <div className="absolute inset-0  items-center justify-center flex flex-col mt-35 mr-30">
             <p className="text-3xl mr-46  mt-50">New to Reem Bank?</p>
             <h2 className="text-5xl leading-tight mt-5 ">Enter your Email<br /> and Get Started Now</h2>
             <div className="md:flex ml-5 ">
               <input type="email" placeholder="enter the email" className="md:border-2 border-red-500 rounded-lg text-white w-sm opacity-80 ml-37 mt-8 text-xl " />
-              <button className="bg-green-500 text-white px-6 rounded-lg text-xl w-50 h-13 mt-8 ml-5 cursor-pointer" >Get Started &#8594;</button>
+              <button className="bg-green-500 text-white px-6 rounded-lg text-xl w-50 h-13 mt-8 ml-5 cursor-pointer" onClick={handleLoginClick} >Get Started &#8594;</button>
             </div>
           </div>
         </div>

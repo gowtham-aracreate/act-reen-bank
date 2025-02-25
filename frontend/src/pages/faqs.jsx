@@ -50,13 +50,13 @@ const Faqs = () => {
         
 
         <div className="w-500 mt-10 ">
-          <ul className="space-y-12  ">
+          <ul className="space-y-10  ">
             {faqs
               .filter(faqs => faqs.id !== selectedFaq) 
               .map((faqs) => (
                 <li key={faqs.id}>
                   <button
-                    className="ml-10 text-2xl text-blue-600 underline" 
+                    className="ml-17 text-2xl text-blue-600 underline " 
                     onClick={() => setSelectedFaq(faqs.id)}>
                     {faqs.question}&#8594;
                   </button>
