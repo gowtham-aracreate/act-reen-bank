@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import BackgroundImage from "../assets/background.svg"; 
 
 const AccountCreation = () => {
