@@ -1,7 +1,9 @@
 import React from "react";
+import {useNavigate} from "react-router-dom";
 import BackgroundImage from "../assets/background.svg"; 
 
 const AccountCreation = () => {
+  const navigate = useNavigate();
   return (
     <div className="relative flex justify-center items-center h-screen bg-center bg-greeen-600" style={{backgroundImage: `url(${BackgroundImage})` }}>
 
