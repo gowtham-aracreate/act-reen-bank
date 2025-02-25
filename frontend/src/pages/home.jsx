@@ -55,7 +55,7 @@ export default function Home() {
             </div>
           </div>
           <div className="ml-12 ">
-            <img src={ReenBank} alt="Banking" className="w-160  " />
+            <img src={ReenBank} alt="Banking" className="w-160 " />
           </div>
         </div>
       </div>
@@ -187,10 +187,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
-
   );
 }
