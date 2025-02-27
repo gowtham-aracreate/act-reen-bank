@@ -33,7 +33,7 @@ export default function Home() {
             <a href="#About" className="cursor-pointer">About</a>
             <a href="#Contact" className="cursor-pointer">Contact Us</a>
           </nav>
-          <button className=" w-30 ml-auto border px-6 py-2 rounded-lg text-green-600 font-semibold cursor-pointer">Login</button>
+          <button onClick={() => navigate("/login")} className=" w-30 ml-auto border px-6 py-2 rounded-lg text-green-600 font-semibold cursor-pointer">Login</button>
         </div>
 
         <div className="flex mt-17">
