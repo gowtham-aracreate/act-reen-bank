@@ -1,9 +1,11 @@
-import React from "react";
+import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
+import OtpInput from "react-otp-input";
 import Layout from "../layouts/leftsection";
 
 const EmailVerification = () => {
   const navigate = useNavigate();
+  const [otp, setOtp] = useState("");
 
   return (
     <Layout>
@@ -12,15 +14,24 @@ const EmailVerification = () => {
         <p className="text-gray-600 mb-4">
           A 6-digit code has been sent to your email us****me@gmail.com <span className="text-green-600 cursor-pointer">Change</span>
         </p>
-        <div className="flex justify-between mb-4">
-          {[...Array(6)].map((_, index) => (
-            <input
-              key={index}
-              type="text"
-              maxLength="1"
-              className="border w-12 h-12 text-center rounded-lg text-lg font-semibold"
-            />
-          ))}
+        <div className="flex justify-center mb-4">
+          <OtpInput
+            value={otp}
+            onChange={setOtp}
+            numInputs={6}
+            inputStyle={{
+              width: "50px",
+              height: "50px",
+              margin: "0 22px", // Adds space between boxes
+              fontSize: "20px",
+              textAlign: "center",
+              borderRadius: "8px",
+              border: "2px gray #8A8A8A",
+              boxShadow: "10px rgba(240, 240, 240, 0.84)",
+              outline: "none",
+            }}
+            renderInput={(props) => <input {...props} />}
+          />
         </div>
         <p className="text-green-600 text-sm mb-4">0:45 remaining</p>
         <button onClick={() => navigate("/create-account")} className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg">
