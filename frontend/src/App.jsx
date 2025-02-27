@@ -6,6 +6,7 @@ import Register from "./pages/register";
 import EmailVerification from "./pages/email";
 import AccountCreation from "./pages/acccreation";
 import OverviewPage from "./pages/OverviewPage";
+import AccountPage from "./pages/AccountPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/verify-email" element={<EmailVerification />} />
         <Route path="/create-account" element={<AccountCreation />} />
         <Route path="/overviewpage" element={<OverviewPage />} />
+        <Route path="/accountpage" element={<AccountPage/>}/>
       </Routes>
     </BrowserRouter>
   );
