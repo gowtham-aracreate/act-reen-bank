@@ -1,7 +1,10 @@
 import React from 'react'
+import Layout from '../layout/Layout'
 
-export const transactions = () => {
+export const TransactionPage = () => {
   return (
-    <div>transactions</div>
+    <Layout>
+      <div>TransactionPage</div>
+    </Layout>
   )
 }
