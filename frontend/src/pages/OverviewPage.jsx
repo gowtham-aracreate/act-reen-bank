@@ -12,7 +12,7 @@ import Income from '../assets/income.svg';
 import Expense from '../assets/expense.svg';
 
 const OverviewPage = () => {
-    const [isHidden, setIsHidden] = useState(false);
+    const [isHidden, setIsHidden] = useState(true);
     const [accounts, setAccounts] = useState([
         { title: "Main Account", amount: 44500 },
         { title: "School Savings", amount: 44500 },

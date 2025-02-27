@@ -1,11 +1,21 @@
 import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import OtpInput from "react-otp-input";
-import Layout from "../layouts/leftsection";
+import Layout from "../layout/leftsection";
 
 const EmailVerification = () => {
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+
+  const handleVerify = () => {
+    if (otp.length === 6) {
+      setError(""); // Clear error if OTP is valid
+      navigate("/create-account"); // Navigate to the next page
+    } else {
+      setError("Please enter a valid 6-digit OTP"); // Show error if OTP is incomplete
+    }
+  };
 
   return (
     <Layout>
@@ -22,21 +32,24 @@ const EmailVerification = () => {
             inputStyle={{
               width: "50px",
               height: "50px",
-              margin: "0 22px", // Adds space between boxes
+              margin: "0 10px", // Adjusted space between boxes
               fontSize: "20px",
               textAlign: "center",
               borderRadius: "8px",
-              border: "2px gray #8A8A8A",
-              boxShadow: "10px rgba(240, 240, 240, 0.84)",
-              outline: "none",
+              border: "2px solid #8A8A8A", // Corrected border property
+              boxShadow: "0px 0px 10px rgba(240, 240, 240, 0.84)", // Corrected boxShadow property
+              outline: "none", required: "required",
             }}
             renderInput={(props) => <input {...props} />}
           />
         </div>
+        {/* Error message if OTP is incorrect */}
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
         <p className="text-green-600 text-sm mb-4">0:45 remaining</p>
-        <button onClick={() => navigate("/create-account")} className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg">
-          Verify Email
-        </button>
+
+        <button onClick={handleVerify} className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg">Verify Email</button>
+
         <p className="text-sm mt-4 pb-10">
           Didn’t receive the code? <span className="text-green-600 cursor-pointer">Resend</span>
         </p>
