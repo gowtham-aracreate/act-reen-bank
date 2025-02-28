@@ -6,6 +6,7 @@ import Register from "./pages/register";
 import EmailVerification from "./pages/email";
 import AccountCreation from "./pages/acccreation";
 import OverviewPage from "./pages/OverviewPage";
+import AccountPage from "./pages/AccountPage";
 import Login from "./pages/Login";
 import { TransactionPage } from "./pages/TransactionPage";
 
@@ -21,6 +22,7 @@ function App() {
         <Route path="/create-account" element={<AccountCreation />} />
         <Route path="/overviewpage" element={<OverviewPage />} />
         <Route path="/transaction" element={<TransactionPage />}/>
+        <Route path="/accountpage" element={<AccountPage/>}/>
       </Routes>
     </BrowserRouter>
   );
