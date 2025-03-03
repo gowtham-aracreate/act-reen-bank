@@ -26,8 +26,6 @@ const AccountCard = ({title, amount}) => {
                 <button className='w-27 h-8 text-gray-700 bg-gray-300 rounded-lg'>Withdraw</button>
             </div>
         </div>
-
-        
         
     )
 }
