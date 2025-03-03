@@ -11,32 +11,36 @@ app.use(express.json());
 
 // Connect to MongoDB
 const connectDB = async () => {
-  await mongoose.connect("mongodb://localhost:27017/Reen-Bank", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  console.log("DB Connected");
+  try {
+    await mongoose.connect("mongodb://localhost:27017/Reen-Bank", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("DB Connected");
+  } catch (error) {
+    console.error("MongoDB Connection Error:", error);
+    process.exit(1);
+  }
 };
 connectDB();
 
 // User Schema
 const UserSchema = new mongoose.Schema({
-  username: String,
-  email: { type: String, unique: true },
-  password: String,
-  acc_no: {type: Number, unique: true, },
-  phone_no: Number,
-  gender: String,
+  username: { type: String, required: true },
+  email: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
+  acc_no: { type: Number, unique: true, default: null }, // acc_no is optional
+  phone_no: { type: Number, default: null },
+  gender: { type: String, default: null },
 });
 
 // User Model
 const User = mongoose.model("UserDetails", UserSchema);
 
-
 // Register User
 app.post("/register", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, phone_no, gender } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -47,12 +51,15 @@ app.post("/register", async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const newUser = await User.create({
+    // Create user without acc_no
+    const newUser = new User({
       username,
       email,
       password: hashedPassword,
+      phone_no,
+      gender,
     });
+
     await newUser.save();
 
     res.status(201).json({ success: true, message: "User registered successfully", user: newUser });
@@ -61,6 +68,7 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
+
 
 
 // Account Details Page
