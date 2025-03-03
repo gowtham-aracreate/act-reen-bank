@@ -28,9 +28,22 @@ const Login = () => {
     return passwordRegex.test(password);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async(e) => {
+    let newErrors = { email: "", password: "" };
     e.preventDefault();
-    let newErrors = { email: "", password: "" };
+    setErrors(""); //Clear Previous Errors
+
+    try {
+      const response = await axios.post("http://localhost:3001/login", {email, password});
+      
+      if(response.data.success) {
+        localStorage.setItem("token", response.data.token); // Store  JWT token in local storage
+        navigate("/overviewpage");
+      }
+    } catch (error) {
+      console.error("Error logging in user", error);
+      setErrors({ email: "Invalid User", password: "Invalid Password" });
+    }
 
     if (!validateEmail(email)) {
       newErrors.email = "Invalid email format";
