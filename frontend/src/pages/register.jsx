@@ -148,3 +148,10 @@ const Register = () => {
 };
 
 export default Register;
+
+
+
+
+
+
+//npm install --save react-otp-input
