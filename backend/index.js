@@ -84,10 +84,11 @@ app.post('/acc_details', async (req, res) => {
 });
 
 
-// Login Page
+// LOGIN PAGE
 app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
   try {
+    const { email, password } = req.body;
+
     const user = await User.findOne({ email });
     if (!user) {
       console.log('User not found');
@@ -100,11 +101,43 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ success: false, message: "Invalid password" });
     }
 
+    // Generate JWT Token
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET);
+
     res.send({ message: 'Login successful', redirectUrl: '/overview' });
   } catch (error) {
     console.error('Error logging in user', error);
-    res.status(500).send('Error logging in user');
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
+});
+
+// Protected Router (For Overview)
+const verifyToken = (req, res, next) => {
+  const token = req.headers['Authorization'];
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'No token provided Access Denied' });
+  }
+
+  try {
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = verified;
+    next();
+  } catch (error) {
+    res.status(401).json({ success: false, message: "Invalid Token" });
+  }
+
+  // jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  //   if (err) {
+  //     return res.status(401).json({ success: false, message: 'Unauthorized' });
+  //   }
+
+  //   req.userId = decoded.id;
+  //   next();
+  // });
+}; 
+
+app.get('/overview', verifyToken, (req, res) => {
+  res.json({ success: true, message: 'Welcome to the overview page', user: req.user });
 });
 
 
