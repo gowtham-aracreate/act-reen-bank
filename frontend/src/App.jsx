@@ -8,6 +8,13 @@ import AccountCreation from "./pages/acccreation";
 import OverviewPage from "./pages/OverviewPage";
 import AccountPage from "./pages/AccountPage";
 import Login from "./pages/Login";
+import Resetpsw from "./pages/resetpsw";
+import Otp from "./pages/otp";
+import Changepsw from "./pages/changepsw";
+import Pswsuccess from "./pages/pswsuccess";
+import Logout from "./pages/logout";
+import Profile from "./pages/ProfilePage";
+import AccountDetails from "./pages/accountdetails";
 
 function App() {
   return (
@@ -21,6 +28,13 @@ function App() {
         <Route path="/create-account" element={<AccountCreation />} />
         <Route path="/overviewpage" element={<OverviewPage />} />
         <Route path="/accountpage" element={<AccountPage/>}/>
+        <Route path="/resetpsw" element={<Resetpsw/>}/>
+        <Route path="/otp" element={<Otp/>}/>
+        <Route path="/changepsw" element={<Changepsw/>}/>
+        <Route path="/pswsuccess" element={<Pswsuccess/>}/>
+        <Route path="/logout" element={<Logout/>}/>
+        <Route path="/profile" element={<Profile/>}/>
+        <Route path="/accountdetails" element={<AccountDetails/>}/>
       </Routes>
     </BrowserRouter>
   );

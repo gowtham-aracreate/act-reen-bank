@@ -49,9 +49,9 @@ const Login = () => {
   };
 
   return (
-    <div className="relative flex justify-center items-center h-screen bg-center bg-greeen-600" style={{ backgroundImage: `url(${BackgroundImage})` }}>
+    <div className="relative flex justify-center items-center h-screen bg-center" style={{ backgroundImage: `url(${BackgroundImage})` }}>
       <div className="absolute inset-0 bg-green-200 opacity-20"></div>
-      <div className="pr-30 flex justify-center items-center">
+      <div className="pr-30 flex justify-between items-center">
         <div className="relative z-10 flex flex-col justify-center p-24">
           <img className="w-50 mb-24" src={Logo} alt="Reen Bank Logo" />
           <h2 className="text-green-600 text-4xl font-medium mb-2">Reen Bank</h2>
@@ -81,16 +81,34 @@ const Login = () => {
               </div>
               {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
-
+            
             {/* Password Field with Toggle */}
             <div className="mb-3">
               <label className="block text-gray-700 font-medium mb-1">Password</label>
-              <div className="relative flex items-center">
-                <input type={isHidden ? "password" : "text"} placeholder="Enter your Password" className="border w-full p-3 pr-12 rounded-lg text-gray-700"
-                  value={password} onChange={(e) => setPassword(e.target.value)} required/>
-                <button type="button" onClick={() => setIsHidden(!isHidden)} className="absolute right-3 top-3 w-5 h-5">
-                  <img src={isHidden ? LockIcon : UnlockIcon} alt="Toggle Password Visibility" className="w-5 h-5" />
+              <div className="relative">
+                <input
+                  type={isHidden ? "password" : "text"}
+                  placeholder="Enter your Password"
+                  className="border w-full p-3 pr-10 rounded-lg text-gray-700"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsHidden(!isHidden)}
+                  className="absolute right-3 top-3"
+                >
+                  <img
+                    src={isHidden ? LockIcon : UnlockIcon}
+                    alt="Toggle Password Visibility"
+                    className="w-5 h-5"
+                  />
                 </button>
+                <span className="absolute right-14 top-3 text-green-600 text-sm cursor-pointer">
+                  <span className="border-r-2 border-gray-400 pr-2 mr-2"></span>
+                  Forgot?
+                </span>
               </div>
               {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
             </div>
