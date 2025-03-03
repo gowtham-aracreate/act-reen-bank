@@ -1,9 +1,9 @@
 import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import OtpInput from "react-otp-input";
-import Layout from "../layout/leftsection";
+import BackgroundImage from "../assets/background.svg";
 
-const EmailVerification = () => {
+const Otp = () => {
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
@@ -11,16 +11,17 @@ const EmailVerification = () => {
   const handleVerify = () => {
     if (otp.length === 6) {
       setError(""); // Clear error if OTP is valid
-      navigate("/accountdetails"); // Navigate to the next page
+      navigate("/changepsw"); // Navigate to the next page
     } else {
       setError("Please enter a valid 6-digit OTP"); // Show error if OTP is incomplete
     }
   };
 
   return (
-    <Layout>
-      <div className="relative bg-white p-10 rounded-3xl shadow-lg w-[600px] px-10 z-10">
-        <h2 className="text-green-600 text-3xl font-bold mb-12 pt-20">Email Verification</h2>
+    <div className="relative flex justify-center items-center h-screen bg-center bg-greeen-600" style={{ backgroundImage: `url(${BackgroundImage})` }}>
+        <div className="absolute inset-0 bg-green-200 opacity-20"></div>
+        <div className="relative bg-white p-10 rounded-3xl shadow-lg w-[600px] px-10 z-10">
+        <h2 className="text-green-600 text-3xl font-bold mb-12 pt-6">Enter OTP</h2>
         <p className="text-gray-600 mb-4">
           A 6-digit code has been sent to your email us****me@gmail.com <span className="text-green-600 cursor-pointer">Change</span>
         </p>
@@ -48,14 +49,15 @@ const EmailVerification = () => {
 
         <p className="text-green-600 text-sm mb-4">0:45 remaining</p>
 
-        <button onClick={handleVerify} className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg">Verify Email</button>
+        <button onClick={handleVerify} className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg">Confirm</button>
 
-        <p className="text-sm mt-4 pb-10">
+        <p className="text-sm mt-4 pb-4">
           Didn’t receive the code? <span className="text-green-600 cursor-pointer">Resend</span>
         </p>
       </div>
-    </Layout>
+    </div>
+      
   );
 };
 
-export default EmailVerification;
+export default Otp;
