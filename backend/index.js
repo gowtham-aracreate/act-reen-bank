@@ -63,6 +63,67 @@ app.post("/register", async (req, res) => {
 });
 
 
+// Account Details Page
+app.post('/acc_details', async (req, res) => {
+  
+  try{
+    const {acc_no, phone_no, gender} = req.body;
+
+    // Create Account
+  const new_acc = await User.create({
+    acc_no,
+    phone_no,
+    gender
+  });
+
+  res.status(201).json({success: true, message: "Account Details Added Successfully", acc: new_acc})
+  } catch (error) {
+    console.error("Error in Adding Account Details:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+
+// Login Page
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log('User not found');
+      return res.status(401).json({ success: false, message: "Invalid User" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      console.log('Password does not match');
+      return res.status(401).json({ success: false, message: "Invalid password" });
+    }
+
+    res.send({ message: 'Login successful', redirectUrl: '/overview' });
+  } catch (error) {
+    console.error('Error logging in user', error);
+    res.status(500).send('Error logging in user');
+  }
+});
+
+
+// Profile page
+app.post('/profile', async (req, res)=>{
+  const data = req.body;
+  const existingUser = await User.findById(data.id);
+  if(!existingUser){
+    return res.json({success: false, message: "User does not exist"});
+  }
+
+  // Editing Option in Profile Page
+  const updatedUser = await User.updateOne({_id: data.id}, {phone_no : data.phone_no, gender : data.gender} );
+
+  return res.status(200).json({message : "User Updated Successfully", success: true, data : updatedUser})
+  
+})
+
+
 app.get('/get_user', async (req, res) => {
   const data = await User.find();
   res.status(200).json(data)
