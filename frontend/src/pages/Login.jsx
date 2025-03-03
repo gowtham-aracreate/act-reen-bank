@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; 
 import EmailIcon from "../assets/envelope.svg";
 import LockIcon from "../assets/lock.svg"; // Locked icon
 import UnlockIcon from "../assets/unlock.svg"; // Unlocked icon
@@ -28,8 +29,24 @@ const Login = () => {
     return passwordRegex.test(password);
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setErrors(""); //Clear Previous Errors
+
+    try {
+      const response = await axios.post("http://localhost:3001/login", {email, password});
+      
+      if(response.data.success) {
+        localStorage.setItem("token", response.data.token); // Store  JWT token in local storage
+        navigate("/overviewpage");
+      }
+    } catch (error) {
+      console.error("Error logging in user", error);
+      setErrors({ email: "Invalid User", password: "Invalid Password" });
+    }
+
+
+
     let newErrors = { email: "", password: "" };
 
     if (!validateEmail(email)) {
