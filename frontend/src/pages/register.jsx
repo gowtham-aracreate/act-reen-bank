@@ -21,7 +21,7 @@ const Register = () => {
 
   const fetchApi = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/get_user");
+      const res = await axios.get("http://localhost:3001/get_user");
       setUsers(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error("Error fetching user data", error);

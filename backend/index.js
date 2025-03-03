@@ -24,10 +24,14 @@ const UserSchema = new mongoose.Schema({
   username: String,
   email: { type: String, unique: true },
   password: String,
+  acc_no: {type: Number, unique: true, },
+  phone_no: Number,
+  gender: String,
 });
 
 // User Model
 const User = mongoose.model("UserDetails", UserSchema);
+
 
 // Register User
 app.post("/register", async (req, res) => {
@@ -37,7 +41,7 @@ app.post("/register", async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.json({ success: false, message: "Email already exists" });
+      return res.status(400).json({ success: false, message: "Email already exists" });
     }
 
     // Hash the password
@@ -49,18 +53,21 @@ app.post("/register", async (req, res) => {
       email,
       password: hashedPassword,
     });
+    await newUser.save();
 
-    res.json({ success: true, message: "User registered successfully", user: newUser });
+    res.status(201).json({ success: true, message: "User registered successfully", user: newUser });
   } catch (error) {
     console.error("Registration error:", error);
-    res.json({ success: false, message: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
-
-  app.get('/get_user', async (req, res) => {
-    const data = await User.find();
-    res.json(data)
-  })
 });
+
+
+app.get('/get_user', async (req, res) => {
+  const data = await User.find();
+  res.status(200).json(data)
+})
+
 
 // Start server
 app.listen(port, () => {
