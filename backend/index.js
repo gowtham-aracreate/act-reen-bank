@@ -11,20 +11,25 @@ app.use(express.json());
 
 // Connect to MongoDB
 const connectDB = async () => {
-  await mongoose.connect("mongodb://localhost:27017/Reen-Bank", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  console.log("DB Connected");
+  try {
+    await mongoose.connect("mongodb://localhost:27017/Reen-Bank", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("DB Connected");
+  } catch (error) {
+    console.error("DB Connection Error:", error);
+    process.exit(1); // Exit the process if the database connection fails
+  }
 };
 connectDB();
 
 // User Schema
 const UserSchema = new mongoose.Schema({
-  username: String,
+  username: {type: String},
   email: { type: String, unique: true },
-  password: String,
-  acc_no: {type: Number, unique: true, },
+  password: {type: String},
+  acc_no: { type: Number, unique: true },
   phone_no: Number,
   gender: String,
 });
@@ -33,7 +38,7 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model("UserDetails", UserSchema);
 
 
-// Register User
+//REGISTER PAGE
 app.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -53,7 +58,6 @@ app.post("/register", async (req, res) => {
       email,
       password: hashedPassword,
     });
-    await newUser.save();
 
     res.status(201).json({ success: true, message: "User registered successfully", user: newUser });
   } catch (error) {
@@ -63,105 +67,88 @@ app.post("/register", async (req, res) => {
 });
 
 
-// Account Details Page
-app.post('/acc_details', async (req, res) => {
-  
-  try{
-    const {acc_no, phone_no, gender} = req.body;
+// ADD ACCOUNT DETAILS PAGE
+app.post("/acc_details", async (req, res) => {
+  try {
+    const { email, acc_no, phone_no, gender } = req.body;
 
-    // Create Account
-  const new_acc = await User.create({
-    acc_no,
-    phone_no,
-    gender
-  });
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
-  res.status(201).json({success: true, message: "Account Details Added Successfully", acc: new_acc})
+    // Update account details
+    user.acc_no = acc_no;
+    user.phone_no = phone_no;
+    user.gender = gender;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Account details updated successfully", user });
   } catch (error) {
-    console.error("Error in Adding Account Details:", error);
+    console.error("Error in adding account details:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
 
-
 // LOGIN PAGE
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
-      console.log('User not found');
-      return res.status(401).json({ success: false, message: "Invalid User" });
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      console.log('Password does not match');
-      return res.status(401).json({ success: false, message: "Invalid password" });
+    // Compare the provided password with the hashed password in the database
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
-    // Generate JWT Token
-    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET);
-
-    res.send({ message: 'Login successful', redirectUrl: '/overview' });
+    // If credentials are valid, return a success response
+    res.status(200).json({ success: true, message: "Login successful", user });
   } catch (error) {
-    console.error('Error logging in user', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error("Login error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
 
-// Protected Router (For Overview)
-const verifyToken = (req, res, next) => {
-  const token = req.headers['Authorization'];
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'No token provided Access Denied' });
-  }
-
+// UPDATE PAGE
+app.post("/profile", async (req, res) => {
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified;
-    next();
+    const { id, phone_no, gender } = req.body;
+
+    // Find the user by ID
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Update profile details
+    user.phone_no = phone_no;
+    user.gender = gender;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Profile updated successfully", user });
   } catch (error) {
-    res.status(401).json({ success: false, message: "Invalid Token" });
+    console.error("Profile update error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
-
-  // jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-  //   if (err) {
-  //     return res.status(401).json({ success: false, message: 'Unauthorized' });
-  //   }
-
-  //   req.userId = decoded.id;
-  //   next();
-  // });
-}; 
-
-app.get('/overview', verifyToken, (req, res) => {
-  res.json({ success: true, message: 'Welcome to the overview page', user: req.user });
 });
 
-
-// Profile page
-app.post('/profile', async (req, res)=>{
-  const data = req.body;
-  const existingUser = await User.findById(data.id);
-  if(!existingUser){
-    return res.json({success: false, message: "User does not exist"});
+// Get All Users (for testing purposes)
+app.get("/get_user", async (req, res) => {
+  try {
+    const data = await User.find();
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
-
-  // Editing Option in Profile Page
-  const updatedUser = await User.updateOne({_id: data.id}, {phone_no : data.phone_no, gender : data.gender} );
-
-  return res.status(200).json({message : "User Updated Successfully", success: true, data : updatedUser})
-  
-})
-
-
-app.get('/get_user', async (req, res) => {
-  const data = await User.find();
-  res.status(200).json(data)
-})
-
+});
 
 // Start server
 app.listen(port, () => {
