@@ -21,7 +21,7 @@ const Register = () => {
 
   const fetchApi = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/get_user");
+      const res = await axios.get("http://localhost:5001/get_user");
       setUsers(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error("Error fetching user data", error);
@@ -41,7 +41,7 @@ const Register = () => {
 
   const validatePassword = (password) => {
     const passwordRegex =
-      /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return passwordRegex.test(password);
   };
 
@@ -65,8 +65,8 @@ const Register = () => {
     if (!newErrors.email && !newErrors.password) {
       try {
         const userData = { username, email, password };
-        const res = await axios.post("http://localhost:3001/register", userData);
-
+        const res = await axios.post("http://localhost:5001/register", userData);
+        console.log(res.data);
         fetchApi();
         setUsers(Array.isArray(res.data) ? res.data : []);
         console.log(res.data);
