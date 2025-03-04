@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; 
+import axios from "axios";
 import EmailIcon from "../assets/envelope.svg";
 import LockIcon from "../assets/lock.svg"; // Locked icon
 import UnlockIcon from "../assets/unlock.svg"; // Unlocked icon
@@ -61,7 +61,16 @@ const Login = () => {
     setErrors(newErrors);
 
     if (!newErrors.email && !newErrors.password) {
-      navigate("/overviewpage");
+      try {
+        const response = await axios.post("http://localhost:5001/login", { email, password });
+        
+        if (response.data.success) {
+          navigate("/overviewpage");
+        }
+      } catch (error) {
+        console.error("Error logging in user", error);
+        setErrors({ email: "Invalid User", password: "Invalid Password" });
+      }
     }
   };
 
