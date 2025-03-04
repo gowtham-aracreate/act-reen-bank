@@ -4,27 +4,25 @@ const cors = require("cors");
 const bcrypt = require("bcrypt"); // For password hashing
 
 const app = express();
-const port = 3001;
+const port = 5001;
 
 app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
 const connectDB = async () => {
-  await mongoose.connect("mongodb://localhost:27017/Reen-Bank", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  console.log("DB Connected");
+    await mongoose.connect("mongodb://localhost:27017/Reen-Bank");
+      console.log("DB Connected");
 };
 connectDB();
 
+
 // User Schema
 const UserSchema = new mongoose.Schema({
-  username: String,
+  username: {type: String},
   email: { type: String, unique: true },
-  password: String,
-  acc_no: {type: Number, unique: true, },
+  password: {type: String},
+  acc_no: {type: Number,required: false },
   phone_no: Number,
   gender: String,
 });
@@ -37,6 +35,9 @@ const User = mongoose.model("UserDetails", UserSchema);
 app.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
+    console.log(req.body)
+    User.insertOne(req.body);
+    return res.send("User Registered Successfully");
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -53,8 +54,7 @@ app.post("/register", async (req, res) => {
       email,
       password: hashedPassword,
     });
-    await newUser.save();
-
+    
     res.status(201).json({ success: true, message: "User registered successfully", user: newUser });
   } catch (error) {
     console.error("Registration error:", error);
@@ -69,13 +69,12 @@ app.post('/acc_details', async (req, res) => {
   try{
     const {acc_no, phone_no, gender} = req.body;
 
-    // Create Account
-  const new_acc = await User.create({
-    acc_no,
-    phone_no,
-    gender
-  });
-
+     // Create Account
+    const new_acc = await User.create({
+      acc_no,
+      phone_no,
+      gender
+    });
   res.status(201).json({success: true, message: "Account Details Added Successfully", acc: new_acc})
   } catch (error) {
     console.error("Error in Adding Account Details:", error);
@@ -110,6 +109,7 @@ app.post('/login', async (req, res) => {
 
 // Profile page
 app.post('/profile', async (req, res)=>{
+
   const data = req.body;
   const existingUser = await User.findById(data.id);
   if(!existingUser){
