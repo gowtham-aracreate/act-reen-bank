@@ -12,7 +12,7 @@ import BackgroundImage from "../assets/background.svg";
 
 const Login = () => {
   const navigate = useNavigate();
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
@@ -37,23 +37,32 @@ const Login = () => {
       newErrors.email = "Invalid email format";
     }
 
-    // if (!validatePassword(password)) {
-    //   newErrors.password =
-    //     "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.";
-    // }
-
     setErrors(newErrors);
 
     if (!newErrors.email && !newErrors.password) {
       try {
         const response = await axios.post("http://localhost:3001/login", { email, password });
-        
+
         if (response.data.success) {
           navigate("/overviewpage");
         }
       } catch (error) {
         console.error("Error logging in user", error);
-        setErrors({ email: "Invalid User", password: "Invalid Password" });
+
+        if (error.response) {
+          console.log("Backend Response:", error.response.data);
+          const {data} = error.response;
+
+          if (data.message === "Invaild Email") {
+            setErrors({ email: "Invalid Email", password: "" });
+          } else if (data.message === "Invalid Password") {
+            setErrors({ email: "", password: "Invalid Password" });
+          }else {
+            setErrors({ email: "Invalid Email", password: "Invalid Password" });
+          }
+        } else {
+          setErrors({ email: "Network Error", password: "Network Error" });
+        }
       }
     }
   };
@@ -86,12 +95,18 @@ const Login = () => {
               <label className="block text-gray-700 font-medium mb-1">Email</label>
               <div className="relative">
                 <input
-                  type="email" placeholder="Enter your Email" className="border w-full p-3 pr-10 rounded-lg text-gray-700" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+                  type="email"
+                  placeholder="Enter your Email"
+                  className="border w-full p-3 pr-10 rounded-lg text-gray-700"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
                 <img src={EmailIcon} alt="Email Icon" className="absolute right-3 top-3 w-5 h-5" />
               </div>
               {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
-            
+
             {/* Password Field with Toggle */}
             <div className="mb-3">
               <label className="block text-gray-700 font-medium mb-1">Password</label>
@@ -130,7 +145,7 @@ const Login = () => {
 
             {/* Redirect to Register */}
             <p className="text-sm mt-4 mb-8">
-              Don't Have an Account? 
+              Don't Have an Account?
               <span className="text-green-600 cursor-pointer font-medium" onClick={() => navigate("/register")}> Register.</span>
             </p>
           </form>

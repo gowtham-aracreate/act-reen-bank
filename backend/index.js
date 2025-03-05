@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt"); // For password hashing
 
 const app = express();
 const port = 3001;
-
+   
 app.use(cors());
 app.use(express.json());
 
@@ -70,7 +70,7 @@ app.post("/register", async (req, res) => {
 // ADD ACCOUNT DETAILS PAGE
 app.post("/acc_details", async (req, res) => {
   try {
-    const { acc_no, phone_no, gender } = req.body;
+    const {acc_no, phone_no, gender } = req.body;
 
   // Validate input
   if(!acc_no || !phone_no || !gender) {
@@ -105,13 +105,13 @@ app.post("/login", async (req, res) => {
     // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ success: false, message: "Invalid email or password" });
+      return res.status(401).json({ success: false, message: "Invalid Email" });
     }
 
     // Compare the provided password with the hashed password in the database
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ success: false, message: "Invalid email or password" });
+      return res.status(401).json({ success: false, message: "Invalid Password" });
     }
 
     // If credentials are valid, return a success response
