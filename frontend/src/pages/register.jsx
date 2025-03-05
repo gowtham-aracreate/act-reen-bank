@@ -67,13 +67,18 @@ const Register = () => {
         const userData = { username, email, password };
         const res = await axios.post("http://localhost:3001/register", userData);
 
-        fetchApi();
-        setUsers(Array.isArray(res.data) ? res.data : []);
-        console.log(res.data);
-
-        navigate("/verify-email");
+        if(res.data.success){
+          navigate("/verify-email");
+        }
+        
       } catch (error) {
         console.error("Registration error:", error);
+        if(error.response){
+          const {data} = error.response;
+          if(data.message == "Email already exists"){
+            setErrors({...errors, email: "Email already exists"});
+          }
+        }
       }
     }
   };
