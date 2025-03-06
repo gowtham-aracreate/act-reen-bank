@@ -59,6 +59,7 @@ app.post("/register", async (req, res) => {
     //delete newUser.password;
 
     res.status(201).json({ success: true, message: "User registered successfully", user_id: newUser._id });//we are sending the user_id to the frontend
+    
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });

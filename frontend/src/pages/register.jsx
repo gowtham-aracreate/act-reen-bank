@@ -67,7 +67,7 @@ const Register = () => {
         const userData = { username, email, password };
         const res = await axios.post("http://localhost:3001/register", userData);
         // console.log(first)
-
+        
         localStorage.setItem('user_id', res.data.user_id);//when we register the user we will get the user_id and we will store it in the local storage
 
         // fetchApi();
@@ -75,9 +75,14 @@ const Register = () => {
 
         console.log(res.data);
         navigate("/verify-email");
-
       } catch (error) {
         console.error("Registration error:", error);
+        if(error.response){
+          const {data} = error.response;
+          if(data.message == "Email already exists"){
+            setErrors({...errors, email: "Email already exists"});
+          }
+        }
       }
     }
   };
