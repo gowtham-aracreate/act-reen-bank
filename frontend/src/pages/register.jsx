@@ -19,19 +19,19 @@ const Register = () => {
   const [errors, setErrors] = useState({ email: "", password: "" });
 
 
-  const fetchApi = async () => {
-    try {
-      const res = await axios.get("http://localhost:3001/get_user");
-      setUsers(Array.isArray(res.data) ? res.data : []);
-    } catch (error) {
-      console.error("Error fetching user data", error);
-      setUsers([]);
-    }
-  };
+  // const fetchApi = async () => {
+  //   try {
+  //     const res = await axios.get("http://localhost:3001/get_user");
+  //     setUsers(Array.isArray(res.data) ? res.data : []);
+  //   } catch (error) {
+  //     console.error("Error fetching user data", error);
+  //     setUsers([]);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchApi();
-  }, []);
+  // useEffect(() => {
+  //   fetchApi();
+  // }, []);
 
 
   const validateEmail = (email) => {
@@ -66,12 +66,16 @@ const Register = () => {
       try {
         const userData = { username, email, password };
         const res = await axios.post("http://localhost:3001/register", userData);
-        console.log(res.data);
-        fetchApi();
-        setUsers(Array.isArray(res.data) ? res.data : []);
-        console.log(res.data);
+        // console.log(first)
 
+        localStorage.setItem('user_id', res.data.user_id);//when we register the user we will get the user_id and we will store it in the local storage
+
+        // fetchApi();
+        // setUsers(Array.isArray(res.data) ? res.data : []);
+
+        console.log(res.data);
         navigate("/verify-email");
+
       } catch (error) {
         console.error("Registration error:", error);
       }

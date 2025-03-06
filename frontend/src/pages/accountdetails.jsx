@@ -22,8 +22,8 @@ const AccountDetails = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    let newErrors = {};
+    e.preventDefault();  //when i am click the subclick button it will not refresh the page
+    let newErrors = {}; // Clear all previous errors
 
     // Validate Account Number
     if (!accountNo || isNaN(accountNo)) {
@@ -40,7 +40,7 @@ const AccountDetails = () => {
       newErrors.gender = "Please select a gender";
     }
 
-    //If any validdation error, stop submission
+    //If any validation error, stop submission
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -50,6 +50,7 @@ const AccountDetails = () => {
        acc_no: accountNo, 
        phone_no: phoneNo,
        gender,
+       user_id : localStorage.getItem("user_id")//we are sending the user_id to the backend
       });
       if(response.data.success){
         console.log("Account Info Submitted:", { accountNo, phoneNo, gender });
