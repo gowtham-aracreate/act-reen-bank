@@ -12,10 +12,7 @@ app.use(express.json());
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect("mongodb://localhost:27017/Reen-Bank", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect("mongodb://localhost:27017/Reen-Bank"); 
     console.log("DB Connected");
   } catch (error) {
     console.error("DB Connection Error:", error);
@@ -24,19 +21,19 @@ const connectDB = async () => {
 };
 connectDB();
 
+
 // User Schema
 const UserSchema = new mongoose.Schema({
   username: {type: String},
-  email: { type: String, unique: true },
+  email: { type: String},
   password: {type: String},
-  acc_no: { type: Number, unique: true },
-  phone_no: Number,
-  gender: String,
+  acc_no: {type: Number },
+  phone_no: {type: Number },
+  gender: {type: String,}
 });
 
 // User Model
 const User = mongoose.model("UserDetails", UserSchema);
-
 
 //REGISTER PAGE
 app.post("/register", async (req, res) => {
@@ -49,18 +46,20 @@ app.post("/register", async (req, res) => {
       return res.status(400).json({ success: false, message: "Email already exists" });
     }
 
-    // Hash the password
+    // Hash the password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user with hashed password
     const newUser = await User.create({
       username,
       email,
-      password: hashedPassword,
+      password: hashedPassword, //save hashed password
     });
-    await newUser.save();
-  
-    res.status(201).json({ success: true, message: "User registered successfully", user: newUser });
+    console.log(user_id = newUser._id);//we are getting the user_id from the database
+    //delete newUser.password;
+
+    res.status(201).json({ success: true, message: "User registered successfully", user_id: newUser._id });//we are sending the user_id to the frontend
+    
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -68,24 +67,42 @@ app.post("/register", async (req, res) => {
 });
 
 
+
 // ADD ACCOUNT DETAILS PAGE
 app.post("/acc_details", async (req, res) => {
   try {
-    const {acc_no, phone_no, gender } = req.body;
+    console.log("Received request body:", req.body);
+    let {user_id, acc_no, phone_no, gender } = req.body;
+    acc_no = parseInt(acc_no);     // Convert to number
+    phone_no = parseInt(phone_no); // Convert to number
 
-    // Find the user by email
-    const user = await User.findOne({ email });
+  // Validate input
+  if(!user_id || !acc_no || !phone_no || !gender) {
+    return res.status(400).json({ success: false, message: "Please fill all the fields" });
+  }
+
+  const user = await User.findById(user_id);//findById is to find the user by id , we are getting the user_id from the frontend
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    // Update account details
-    user.acc_no = acc_no;
-    user.phone_no = phone_no;
-    user.gender = gender;
-    await user.save();
+  //check if account number or phone number already exists
+  const account = await User.findOne({ acc_no});//findOne is to find the user by account number
+  const phone = await User.findOne({ phone_no});
+  if (account || phone) {
+    return res.status(400).json({ 
+        success: false, 
+        message: "Account number or Phone number already exists" 
+    });
+}
 
-    res.status(200).json({ success: true, message: "Account details updated successfully", user });
+ user.acc_no = acc_no;
+ user.phone_no = phone_no;
+ user.gender = gender;
+ await user.save();
+  
+
+    res.status(201).json({ success: true, message: "Account details updated successfully", user });
   } catch (error) {
     console.error("Error in adding account details:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
