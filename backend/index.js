@@ -25,16 +25,15 @@ connectDB();
 // User Schema
 const UserSchema = new mongoose.Schema({
   username: {type: String},
-  email: { type: String, unique: true },
+  email: { type: String},
   password: {type: String},
-  acc_no: {type: Number, required: true, unique: true},
-  phone_no: {type: Number, required: true, unique: true},
-  gender: {type: String, required: true}
+  acc_no: {type: Number },
+  phone_no: {type: Number },
+  gender: {type: String,}
 });
 
 // User Model
 const User = mongoose.model("UserDetails", UserSchema);
-
 
 //REGISTER PAGE
 app.post("/register", async (req, res) => {
@@ -54,11 +53,12 @@ app.post("/register", async (req, res) => {
     const newUser = await User.create({
       username,
       email,
-      password: hashedPassword, // Save hashed password
+      password: hashedPassword, //save hashed password
     });
+    console.log(user_id = newUser._id);//we are getting the user_id from the database
+    //delete newUser.password;
 
-
-    res.status(201).json({ success: true, message: "User registered successfully", user: newUser });
+    res.status(201).json({ success: true, message: "User registered successfully", user_id: newUser._id });//we are sending the user_id to the frontend
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -70,25 +70,36 @@ app.post("/register", async (req, res) => {
 // ADD ACCOUNT DETAILS PAGE
 app.post("/acc_details", async (req, res) => {
   try {
-    const {acc_no, phone_no, gender } = req.body;
+    console.log("Received request body:", req.body);
+    let {user_id, acc_no, phone_no, gender } = req.body;
+    acc_no = parseInt(acc_no);     // Convert to number
+    phone_no = parseInt(phone_no); // Convert to number
 
   // Validate input
-  if(!acc_no || !phone_no || !gender) {
+  if(!user_id || !acc_no || !phone_no || !gender) {
     return res.status(400).json({ success: false, message: "Please fill all the fields" });
   }
 
-  //check if account number or phone number already exists
-  const existingAccount = await User.findOne({ $or:[{ acc_no},{phone_no}]    
-   });
-  if (existingAccount) {
-    return res.status(400).json({ success: false, message: "Account number or Phone number already exists" });
-  }
+  const user = await User.findById(user_id);//findById is to find the user by id , we are getting the user_id from the frontend
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
-  const newAccount = await User.create({
-    acc_no,
-    phone_no,
-    gender,
-  });
+  //check if account number or phone number already exists
+  const account = await User.findOne({ acc_no});//findOne is to find the user by account number
+  const phone = await User.findOne({ phone_no});
+  if (account || phone) {
+    return res.status(400).json({ 
+        success: false, 
+        message: "Account number or Phone number already exists" 
+    });
+}
+
+ user.acc_no = acc_no;
+ user.phone_no = phone_no;
+ user.gender = gender;
+ await user.save();
+  
 
     res.status(201).json({ success: true, message: "Account details updated successfully", user });
   } catch (error) {
