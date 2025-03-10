@@ -68,6 +68,7 @@ const Register = () => {
         const res = await axios.post("http://localhost:3001/register", userData);
 
         if(res.data.success){
+          localStorage.setItem("email", email); // Save email for OTP verification
           navigate("/verify-email");
         }
         
