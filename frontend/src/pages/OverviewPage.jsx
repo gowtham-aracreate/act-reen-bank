@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import EyeOpen from '../assets/eyeopen.svg';
 import EyeClose from '../assets/eyeclosed.svg';
@@ -12,6 +13,7 @@ import Income from '../assets/income.svg';
 import Expense from '../assets/expense.svg';
 
 const OverviewPage = () => {
+    const navigate = useNavigate();
     const [isHidden, setIsHidden] = useState(true);
     const [accounts, setAccounts] = useState([
         { title: "Main Account", amount: 44500 },

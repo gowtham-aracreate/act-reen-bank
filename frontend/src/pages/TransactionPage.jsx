@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Layout from '../layout/Layout'
 import EyeOpen from '../assets/eyeopen.svg';
@@ -33,6 +34,7 @@ holiday:[
 ]
 }
 export const TransactionPage = () => {
+  const navigate = useNavigate();
   const [isMainAccountHidden, setIsMainAccountHidden] = useState(true);
   const [isSchoolSavingsHidden, setIsSchoolSavingsHidden] = useState(true);
   const [isHolidayPlanHidden, setIsHolidayPlanHidden] = useState(true);
@@ -42,8 +44,9 @@ export const TransactionPage = () => {
 
   return (
     <Layout>
+      <div className='max-w-6xl'>
       <div className='flex mt-17'>
-        <div className='flex bg-green-200 border-2 border-l-indigo-500  w-xs rounded-lg ml-5 px-4 py-6 justify-between items-center cursor-pointer' onClick={() => setSelectedAccount('main')}>
+        <div className='flex bg-green-200 border-2 border-l-indigo-500  w-xs rounded-lg ml-5 px-4 py-6 justify-between items-center cursor-pointer hover:border-top-blue-500' onClick={() => setSelectedAccount('main')}>
           <div>
             <h3>Main Account</h3>
             <p className="text-xl font-bold">{isMainAccountHidden ? "XXXXX" : "₦ 44,500.00"}</p>
@@ -55,7 +58,7 @@ export const TransactionPage = () => {
           </div>
         </div>
 
-        <div className='flex bg-green-200 w-xs rounded-lg ml-15 px-4 py-6 justify-between items-center cursor-pointer' onClick={() => setSelectedAccount('school')}>
+        <div className='flex bg-green-200 w-xs rounded-lg ml-19 px-4 py-6 justify-between items-center cursor-pointer' onClick={() => setSelectedAccount('school')}>
           <div>
             <h3>School Savings</h3>
             <p className="text-xl font-bold">{isSchoolSavingsHidden ? "XXXXX" : "₦ 44,500.00"}</p>
@@ -67,7 +70,7 @@ export const TransactionPage = () => {
           </div>
         </div>
 
-        <div className='flex bg-green-200 w-xs rounded-lg ml-15 px-4 py-6 justify-between items-center cursor-pointer' onClick={() => setSelectedAccount('holiday')}>
+        <div className='flex bg-green-200 w-xs rounded-lg ml-19 px-4 py-6 justify-between items-center cursor-pointer' onClick={() => setSelectedAccount('holiday')}>
           <div>
             <h3>Holiday Plan</h3>
             <p className="text-xl font-bold">{isHolidayPlanHidden ? "XXXXX" : "₦ 44,500.00"}</p>
@@ -81,9 +84,9 @@ export const TransactionPage = () => {
       </div>
 
       <div>
-      <div className='mt-15'>
+      <div className='mt-13 text-lg'>
         {transactions[selectedAccount].map(transaction => (
-          <div key={transaction.id} className='flex justify-between  p-4 border-b-2 border-gray-300'>
+          <div key={transaction.id} className='grid grid-cols-4 p-2 border-b-2 border-gray-300'>
 
             <p>{transaction.name}</p>
             <p>{transaction.date}</p>
@@ -97,6 +100,8 @@ export const TransactionPage = () => {
         ))}
       </div>
       </div>
+      </div>
+      
     </Layout>
   )
 }
