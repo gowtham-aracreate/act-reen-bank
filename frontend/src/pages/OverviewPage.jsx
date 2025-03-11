@@ -12,7 +12,7 @@ import BalanceCard from '../components/BalanceCard.jsx';
 import Income from '../assets/income.svg';
 import Expense from '../assets/expense.svg';
 
-const OverviewPage = () => {
+const OverviewPage = ({pageTitle}) => {
     const navigate = useNavigate();
     const [isHidden, setIsHidden] = useState(true);
     const [accounts, setAccounts] = useState([
@@ -27,7 +27,9 @@ const OverviewPage = () => {
     };
 
     return (
-        <Layout>
+        <Layout pageTitle={pageTitle}>
+                 {/* pass pageTitle to layout */}
+
             <div className='mt-0 flex items-top'>
 
                 {/* Overview Content */}

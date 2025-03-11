@@ -3,7 +3,7 @@ import User from '../assets/userimg.svg'
 import Search from '../assets/search.svg'
 import Notification from '../assets/notification.svg'
 
-const Header = () => {
+const Header = ({pageTitle}) => {
   const [username, setUserName] = useState('');
   const [accno , setAccNo] = useState('');
   
@@ -13,11 +13,14 @@ const Header = () => {
     const StoredAccno = localStorage.getItem('acc_no');
     setUserName(StoredUsername);
     setAccNo(StoredAccno);
-  });
+  },[]);//Add dependency array to run only once
+
   return (
         <div className='pt-7' >
           <div className='flex justify-between items-center px-10 pr-20'>
-            <div><h2 className="text-3xl font-semibold">Overview</h2></div>
+            <div>
+              <h2 className="text-3xl font-semibold ">{pageTitle}</h2>
+            </div>
             <div className='flex items-centre gap-10'>
               <div className='pr-15 text-right'>
                 <p className='text-xl font-bold text-green-600'>{username}</p>
