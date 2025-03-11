@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import OtpInput from "react-otp-input";
 
-const OtpComponent = ({ title, buttonText, initialEmail, onVerify, onResendOtp, onChangeEmail }) => {
+const OtpComponent = ({ title, buttonText, initialEmail, onVerify, onResendOtp }) => {
+  const navigate = useNavigate();
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(45);
   const [canResend, setCanResend] = useState(false);
-  const [email, setEmail] = useState(initialEmail);
-  const [editing, setEditing] = useState(false);
+  const email = initialEmail;
 
   useEffect(() => {
     if (timer > 0) {
@@ -26,15 +27,8 @@ const OtpComponent = ({ title, buttonText, initialEmail, onVerify, onResendOtp, 
     }
   };
 
-  const handleEmailChange = () => {
-    setEditing(true);
-  };
-
-  const handleSaveEmail = () => {
-    setEditing(false);
-    onChangeEmail(email);
-    localStorage.setItem("email", email);
-    onResendOtp(email);
+  const handleChangeEmail = () => {
+    navigate("/register"); // Redirect to the Register page
   };
 
   const handleVerifyOtp = async () => {
@@ -61,25 +55,10 @@ const OtpComponent = ({ title, buttonText, initialEmail, onVerify, onResendOtp, 
     <div className="relative bg-white p-10 rounded-3xl shadow-lg w-[600px] px-10 z-10">
       <h2 className="text-green-600 text-3xl font-bold mb-12 pt-6">{title}</h2>
       <p className="text-gray-600 mb-4">
-        {editing ? (
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 px-2 py-1 rounded"
-          />
-        ) : (
-          <>A 6-digit code has been sent to your email {email}</>
-        )}
-        {!editing ? (
-          <span className="text-green-600 cursor-pointer ml-2" onClick={handleEmailChange}>
-            Change
-          </span>
-        ) : (
-          <span className="text-green-600 cursor-pointer ml-2" onClick={handleSaveEmail}>
-            Save
-          </span>
-        )}
+        A 6-digit code has been sent to your email {email}
+        <span className="text-green-600 cursor-pointer ml-2" onClick={handleChangeEmail}>
+          Change
+        </span>
       </p>
       <div className="flex justify-center mb-4">
         <OtpInput

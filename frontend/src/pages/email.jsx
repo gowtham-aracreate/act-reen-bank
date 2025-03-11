@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import OtpComponent from "../components/OtpComponent";
 import Layout from "../layout/leftsection";
 
 const EmailVerification = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState(localStorage.getItem("email") || "");
+  const email = localStorage.getItem("email") || ""; // Get email from localStorage
+  const [otpSent, setOtpSent] = useState(false);
+  const otpRequestInProgress = useRef(false); // Prevents multiple OTP requests
 
   useEffect(() => {
-    if (email && email.trim() !== "") {
+    if (email && !otpSent && !otpRequestInProgress.current) {
       sendOtp(email);
     }
-  }, [email]);
+  }, [email, otpSent]);
 
   const sendOtp = async (emailToSend) => {
-    if (!emailToSend || emailToSend.trim() === "") return;
+    if (!emailToSend.trim() || otpRequestInProgress.current) return;
+
+    otpRequestInProgress.current = true; // Prevent multiple requests
 
     try {
       const response = await fetch("http://localhost:3001/send-otp", {
@@ -26,22 +30,25 @@ const EmailVerification = () => {
       const data = await response.json();
       if (data.success) {
         alert("OTP sent successfully!");
+        setOtpSent(true);
       } else {
         alert(data.message || "Failed to send OTP.");
       }
     } catch (error) {
       console.error("Error sending OTP:", error);
       alert("Error sending OTP. Please try again.");
+    } finally {
+      otpRequestInProgress.current = false; // Allow future requests
     }
   };
 
   const handleVerify = () => {
-    navigate("/accountdetails"); // Navigate to account details page on OTP verification
+    navigate("/accountdetails"); // Navigate to account details page after verification
   };
 
   const handleChangeEmail = () => {
     localStorage.removeItem("email"); // Clear stored email
-    navigate("/register"); // Redirect user to registration page
+    navigate("/register"); // Redirect to Register page
   };
 
   return (
@@ -52,8 +59,11 @@ const EmailVerification = () => {
           buttonText="Verify Email"
           initialEmail={email}
           onVerify={handleVerify}
-          onResendOtp={() => sendOtp(email)}
-          onChangeEmail={handleChangeEmail} // Navigates to the registration page
+          onResendOtp={() => {
+            setOtpSent(false); // Reset OTP sent flag for resend
+            sendOtp(email);
+          }}
+          onChangeEmail={handleChangeEmail} // Navigates to the Register page
         />
       </div>
     </Layout>
