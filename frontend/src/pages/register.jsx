@@ -66,8 +66,13 @@ const Register = () => {
       try {
         const userData = { username, email, password };
         const res = await axios.post("http://localhost:3001/register", userData);
-        // console.log(first)
 
+
+        if(res.data.success){
+          localStorage.setItem("email", email); // Save email for OTP verification
+          navigate("/verify-email");
+        }
+        
         localStorage.setItem('user_id', res.data.user_id);//when we register the user we will get the user_id and we will store it in the local storage
         localStorage.setItem('username', username);
         // fetchApi();
@@ -75,9 +80,14 @@ const Register = () => {
 
         console.log(res.data);
         navigate("/verify-email");
-
       } catch (error) {
         console.error("Registration error:", error);
+        if(error.response){
+          const {data} = error.response;
+          if(data.message == "Email already exists"){
+            setErrors({...errors, email: "Email already exists"});
+          }
+        }
       }
     }
   };

@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcrypt"); // For password hashing
+const nodemailer = require("nodemailer");
 
 const app = express();
 const port = 3001;
@@ -35,6 +36,129 @@ const UserSchema = new mongoose.Schema({
 // User Model
 const User = mongoose.model("UserDetails", UserSchema);
 
+// OTP Schema (Stores OTPs separately)
+const OtpSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true }, // Each email has one OTP record
+  otp: { type: String, required: true },
+  otpExpires: { type: Date, required: true } // Expiry time for OTP
+});
+
+const Otp = mongoose.model("Otp", OtpSchema);
+
+// Nodemailer Transporter (Replace with your credentials)
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "reenbankact@gmail.com",  // Replace with your Gmail
+    pass: "rwgvvovgrqkpmbli",     // Replace with your App password
+  },
+});
+
+// Function to generate OTP
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+// Send OTP Route (For registration & email change)
+app.post("/send-otp", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const otp = generateOTP();
+    const expiry = new Date(Date.now() + 5 * 60 * 1000); // OTP valid for 5 minutes
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    // Store OTP separately
+    await Otp.findOneAndUpdate(
+      { email },
+      { otp, otpExpires: expiry },
+      { upsert: true, new: true }
+    );
+
+    // Send OTP email
+    await transporter.sendMail({
+      from: "reenbankact@gmail.com",
+      to: email,
+      subject: "Your OTP Code",
+      text: `Your OTP code is ${otp}. It is valid for 5 minutes.`,
+    });
+
+    res.json({ success: true, message: "OTP sent successfully" });
+  } catch (error) {
+    console.error("Send OTP error:", error);
+    res.status(500).json({ success: false, message: "Error sending OTP" });
+  }
+});
+
+// Verify OTP Route
+app.post("/verify-otp", async (req, res) => {
+  try {
+      const { email, otp } = req.body;
+      console.log("Received email:", email);
+      console.log("Received OTP:", otp);
+
+      const otpRecord = await Otp.findOne({ email });
+
+      if (!otpRecord) {
+          console.log("OTP not found for email:", email);
+          return res.status(400).json({ success: false, message: "OTP not found. Please request a new one." });
+      }
+
+      console.log("Stored OTP:", otpRecord.otp);
+
+      if (otpRecord.otp.toString() !== otp.toString()) {
+          console.log("Entered OTP does not match stored OTP");
+          return res.status(400).json({ success: false, message: "Incorrect OTP. Please try again." });
+      }
+
+      // Mark user as verified
+      await User.findOneAndUpdate({ email }, { verified: true });
+
+      // Delete OTP after verification
+      await Otp.deleteOne({ email });
+
+      res.json({ success: true, message: "OTP Verified!" });
+
+  } catch (error) {
+      console.error("Server error in /verify-otp:", error);
+      res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
+
+
+// // Resend OTP Route
+// app.post("/resend-otp", async (req, res) => {
+//   try {
+//     const { email } = req.body;
+//     const otp = generateOTP();
+//     const expiry = new Date(Date.now() + 5 * 60 * 1000);
+
+//     let user = await User.findOne({ email });
+//     if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+//     // Store new OTP
+//     await Otp.findOneAndUpdate(
+//       { email },
+//       { otp, otpExpires: expiry },
+//       { upsert: true, new: true }
+//     );
+
+//     // Send OTP email
+//     await transporter.sendMail({
+//       from: "reenbankact@gmail.com",
+//       to: email,
+//       subject: "Your New OTP Code",
+//       text: `Your new OTP code is ${otp}. It is valid for 5 minutes.`,
+//     });
+
+//     res.json({ success: true, message: "New OTP sent successfully" });
+//   } catch (error) {
+//     console.error("Resend OTP error:", error);
+//     res.status(500).json({ success: false, message: "Error resending OTP" });
+//   }
+// });
+
 //REGISTER PAGE
 app.post("/register", async (req, res) => {
   try {
@@ -59,6 +183,7 @@ app.post("/register", async (req, res) => {
     //delete newUser.password;
 
     res.status(201).json({ success: true, message: "User registered successfully", user_id: newUser._id });//we are sending the user_id to the frontend
+    
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
