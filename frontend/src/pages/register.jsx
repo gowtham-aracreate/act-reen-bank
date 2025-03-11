@@ -66,7 +66,12 @@ const Register = () => {
       try {
         const userData = { username, email, password };
         const res = await axios.post("http://localhost:3001/register", userData);
-        // console.log(first)
+
+
+        if(res.data.success){
+          localStorage.setItem("email", email); // Save email for OTP verification
+          navigate("/verify-email");
+        }
         
         localStorage.setItem('user_id', res.data.user_id);//when we register the user we will get the user_id and we will store it in the local storage
 
