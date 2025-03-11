@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import EyeOpen from '../assets/eyeopen.svg';
 import EyeClose from '../assets/eyeclosed.svg';
@@ -11,7 +12,8 @@ import BalanceCard from '../components/BalanceCard.jsx';
 import Income from '../assets/income.svg';
 import Expense from '../assets/expense.svg';
 
-const OverviewPage = () => {
+const OverviewPage = ({pageTitle}) => {
+    const navigate = useNavigate();
     const [isHidden, setIsHidden] = useState(true);
     const [accounts, setAccounts] = useState([
         { title: "Main Account", amount: 44500 },
@@ -25,7 +27,9 @@ const OverviewPage = () => {
     };
 
     return (
-        <Layout>
+        <Layout pageTitle={pageTitle}>
+                 {/* pass pageTitle to layout */}
+
             <div className='mt-0 flex items-top'>
 
                 {/* Overview Content */}

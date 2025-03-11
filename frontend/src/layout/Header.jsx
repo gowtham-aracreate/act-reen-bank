@@ -1,17 +1,30 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import User from '../assets/userimg.svg'
 import Search from '../assets/search.svg'
 import Notification from '../assets/notification.svg'
 
-const Header = () => {
+const Header = ({pageTitle}) => {
+  const [username, setUserName] = useState('');
+  const [accno , setAccNo] = useState('');
+  
+  useEffect(() =>{
+    //Retrieve user details from local storage
+    const StoredUsername = localStorage.getItem('username');
+    const StoredAccno = localStorage.getItem('acc_no');
+    setUserName(StoredUsername);
+    setAccNo(StoredAccno);
+  },[]);//Add dependency array to run only once
+
   return (
         <div className='pt-7' >
           <div className='flex justify-between items-center px-10 pr-20'>
-            <div><h2 className="text-3xl font-semibold">Overview</h2></div>
+            <div>
+              <h2 className="text-3xl font-semibold ">{pageTitle}</h2>
+            </div>
             <div className='flex items-centre gap-10'>
               <div className='pr-15 text-right'>
-                <p className='text-sm font-bold text-green-600'>Maureen Oguche</p>
-                <p className='text-3xl font-bold'>1234567890</p>
+                <p className='text-xl font-bold text-green-600'>{username}</p>
+                <p className='text-3xl font-bold'>{accno}</p>
               </div>
 
               <div className='flex items-center gap-70'>
