@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Layout from "../layout/leftsection";
 import AccountIcon from "../assets/account.svg";
 import GenderIcon from "../assets/gender.svg";
@@ -20,22 +21,45 @@ const AccountDetails = () => {
     return phonePattern.test(number);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let newErrors = {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();  //when i am click the subclick button it will not refresh the page
+    let newErrors = {}; // Clear all previous errors
+
+    // Validate Account Number
+    if (!accountNo || isNaN(accountNo)) {
+      newErrors.accountNo = "Enter a valid account number";
+    }
 
     // Validate Phone Number
     if (!validatePhoneNumber(phoneNo)) {
       newErrors.phoneNo = "Enter a valid 10-digit phone number";
     }
 
+    // Validate gender
+    if(!gender) {
+      newErrors.gender = "Please select a gender";
+    }
+
+    //If any validation error, stop submission
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-
-    console.log("Account Info Submitted:", { accountNo, phoneNo, gender });
-    navigate("/create-account"); // Redirect after submission
+    try{
+      const response = await axios.post("http://localhost:3001/acc_details", { 
+       acc_no: accountNo, 
+       phone_no: phoneNo,
+       gender,
+       user_id : localStorage.getItem("user_id")//we are sending the user_id to the backend
+      });
+      if(response.data.success){
+        console.log("Account Info Submitted:", { accountNo, phoneNo, gender });
+        navigate("/create-account");
+      }
+    } catch (error) {
+      console.error("Error submitting account details:", error);
+      setErrors({ server: "Failed to save account details. Try again." });
+    }
   };
 
   return (
