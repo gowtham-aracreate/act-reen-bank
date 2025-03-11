@@ -8,35 +8,40 @@ const EmailVerification = () => {
   const [email, setEmail] = useState(localStorage.getItem("email") || "");
 
   useEffect(() => {
-    console.log("Updated email state:", email);
+    if (email && email.trim() !== "") {
+      sendOtp(email);
+    }
   }, [email]);
 
-  const handleVerify = () => {
-    navigate("/accountdetails");
-  };
-
-  const handleResendOtp = async (updatedEmail) => {
-    const emailToSend = updatedEmail || email;
+  const sendOtp = async (emailToSend) => {
+    if (!emailToSend || emailToSend.trim() === "") return;
 
     try {
-      const response = await fetch("http://localhost:3001/resend-otp", {
+      const response = await fetch("http://localhost:3001/send-otp", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: emailToSend }),
       });
 
       const data = await response.json();
       if (data.success) {
-        alert("New OTP sent successfully!");
+        alert("OTP sent successfully!");
       } else {
-        alert(data.message);
+        alert(data.message || "Failed to send OTP.");
       }
     } catch (error) {
-      console.error("Error resending OTP:", error);
+      console.error("Error sending OTP:", error);
       alert("Error sending OTP. Please try again.");
     }
+  };
+
+  const handleVerify = () => {
+    navigate("/accountdetails"); // Navigate to account details page on OTP verification
+  };
+
+  const handleChangeEmail = () => {
+    localStorage.removeItem("email"); // Clear stored email
+    navigate("/register"); // Redirect user to registration page
   };
 
   return (
@@ -47,8 +52,8 @@ const EmailVerification = () => {
           buttonText="Verify Email"
           initialEmail={email}
           onVerify={handleVerify}
-          onResendOtp={handleResendOtp}
-          onChangeEmail={setEmail}
+          onResendOtp={() => sendOtp(email)}
+          onChangeEmail={handleChangeEmail} // Navigates to the registration page
         />
       </div>
     </Layout>

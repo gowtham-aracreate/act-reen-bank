@@ -95,62 +95,71 @@ app.post("/send-otp", async (req, res) => {
 // Verify OTP Route
 app.post("/verify-otp", async (req, res) => {
   try {
-    const { email, otp } = req.body;
+      const { email, otp } = req.body;
+      console.log("Received email:", email);
+      console.log("Received OTP:", otp);
 
-    // Find OTP record
-    const otpRecord = await Otp.findOne({ email });
-    if (!otpRecord || otpRecord.otpExpires < new Date()) {
-      return res.status(400).json({ success: false, message: "OTP expired or invalid" });
-    }
+      const otpRecord = await Otp.findOne({ email });
 
-    if (otpRecord.otp !== otp) {
-      return res.status(400).json({ success: false, message: "Incorrect OTP" });
-    }
+      if (!otpRecord) {
+          console.log("OTP not found for email:", email);
+          return res.status(400).json({ success: false, message: "OTP not found. Please request a new one." });
+      }
 
-    // Mark user as verified
-    await User.findOneAndUpdate({ email }, { isVerified: true });
+      console.log("Stored OTP:", otpRecord.otp);
 
-    // Delete OTP record after successful verification
-    await Otp.deleteOne({ email });
+      if (otpRecord.otp.toString() !== otp.toString()) {
+          console.log("Entered OTP does not match stored OTP");
+          return res.status(400).json({ success: false, message: "Incorrect OTP. Please try again." });
+      }
 
-    res.json({ success: true, message: "OTP verified successfully" });
+      // Mark user as verified
+      await User.findOneAndUpdate({ email }, { verified: true });
+
+      // Delete OTP after verification
+      await Otp.deleteOne({ email });
+
+      res.json({ success: true, message: "OTP Verified!" });
+
   } catch (error) {
-    console.error("Verify OTP error:", error);
-    res.status(500).json({ success: false, message: "Error verifying OTP" });
+      console.error("Server error in /verify-otp:", error);
+      res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
 
-// Resend OTP Route
-app.post("/resend-otp", async (req, res) => {
-  try {
-    const { email } = req.body;
-    const otp = generateOTP();
-    const expiry = new Date(Date.now() + 5 * 60 * 1000);
 
-    let user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
-    // Store new OTP
-    await Otp.findOneAndUpdate(
-      { email },
-      { otp, otpExpires: expiry },
-      { upsert: true, new: true }
-    );
+// // Resend OTP Route
+// app.post("/resend-otp", async (req, res) => {
+//   try {
+//     const { email } = req.body;
+//     const otp = generateOTP();
+//     const expiry = new Date(Date.now() + 5 * 60 * 1000);
 
-    // Send OTP email
-    await transporter.sendMail({
-      from: "reenbankact@gmail.com",
-      to: email,
-      subject: "Your New OTP Code",
-      text: `Your new OTP code is ${otp}. It is valid for 5 minutes.`,
-    });
+//     let user = await User.findOne({ email });
+//     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
-    res.json({ success: true, message: "New OTP sent successfully" });
-  } catch (error) {
-    console.error("Resend OTP error:", error);
-    res.status(500).json({ success: false, message: "Error resending OTP" });
-  }
-});
+//     // Store new OTP
+//     await Otp.findOneAndUpdate(
+//       { email },
+//       { otp, otpExpires: expiry },
+//       { upsert: true, new: true }
+//     );
+
+//     // Send OTP email
+//     await transporter.sendMail({
+//       from: "reenbankact@gmail.com",
+//       to: email,
+//       subject: "Your New OTP Code",
+//       text: `Your new OTP code is ${otp}. It is valid for 5 minutes.`,
+//     });
+
+//     res.json({ success: true, message: "New OTP sent successfully" });
+//   } catch (error) {
+//     console.error("Resend OTP error:", error);
+//     res.status(500).json({ success: false, message: "Error resending OTP" });
+//   }
+// });
 
 
 //REGISTER PAGE
