@@ -74,7 +74,8 @@ const Register = () => {
         }
         
         localStorage.setItem('user_id', res.data.user_id);//when we register the user we will get the user_id and we will store it in the local storage
-
+        localStorage.setItem('username', username);
+        localStorage.setItem('email',email );
         // fetchApi();
         // setUsers(Array.isArray(res.data) ? res.data : []);
 

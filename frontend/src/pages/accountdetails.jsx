@@ -54,6 +54,11 @@ const AccountDetails = () => {
       });
       if(response.data.success){
         console.log("Account Info Submitted:", { accountNo, phoneNo, gender });
+
+        localStorage.setItem('acc_no',accountNo );//storing account no in local storage
+        localStorage.setItem('phone_no',phoneNo);
+        localStorage.setItem('gender',gender);
+
         navigate("/create-account");
       }
     } catch (error) {
