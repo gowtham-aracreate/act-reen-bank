@@ -52,7 +52,7 @@ const OtpComponent = ({ title, buttonText, initialEmail, onVerify, onResendOtp }
   };
 
   return (
-    <div className="relative bg-white p-10 rounded-3xl shadow-lg w-[600px] px-10 z-10">
+    <div >
       <h2 className="text-green-600 text-3xl font-bold mb-12 pt-6">{title}</h2>
       <p className="text-gray-600 mb-4">
         A 6-digit code has been sent to your email {email}
