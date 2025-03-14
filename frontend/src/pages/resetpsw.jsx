@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from "react-router-dom";
 import EmailIcon from "../assets/envelope.svg";
-import BackgroundImage from "../assets/background.svg";
+// import BackgroundImage from "../assets/background.svg";
 
 export const resetpsw = () => {
     const navigate = useNavigate();
@@ -12,8 +12,6 @@ export const resetpsw = () => {
     }
     
   return (
-      <div className="relative flex justify-center items-center h-screen bg-center bg-greeen-600" style={{ backgroundImage: `url(${BackgroundImage})` }}>
-        <div className="absolute inset-0 bg-green-200 opacity-20"></div>
         <div className="flex justify-center items-center">
 
           {/* Login Form */}
@@ -37,7 +35,6 @@ export const resetpsw = () => {
             </form>
           </div>
         </div>
-      </div>
     );
   };
   

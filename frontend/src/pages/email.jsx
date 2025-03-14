@@ -53,7 +53,7 @@ const EmailVerification = () => {
 
   return (
     <Layout>
-      <div className="flex justify-center items-center h-screen">
+      <div className="relative bg-white p-10 rounded-3xl shadow-lg w-[600px] px-10 z-10 flex justify-center items-center">
         <OtpComponent
           title="Email Verification"
           buttonText="Verify Email"

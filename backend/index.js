@@ -126,39 +126,6 @@ app.post("/verify-otp", async (req, res) => {
 });
 
 
-
-// // Resend OTP Route
-// app.post("/resend-otp", async (req, res) => {
-//   try {
-//     const { email } = req.body;
-//     const otp = generateOTP();
-//     const expiry = new Date(Date.now() + 5 * 60 * 1000);
-
-//     let user = await User.findOne({ email });
-//     if (!user) return res.status(404).json({ success: false, message: "User not found" });
-
-//     // Store new OTP
-//     await Otp.findOneAndUpdate(
-//       { email },
-//       { otp, otpExpires: expiry },
-//       { upsert: true, new: true }
-//     );
-
-//     // Send OTP email
-//     await transporter.sendMail({
-//       from: "reenbankact@gmail.com",
-//       to: email,
-//       subject: "Your New OTP Code",
-//       text: `Your new OTP code is ${otp}. It is valid for 5 minutes.`,
-//     });
-
-//     res.json({ success: true, message: "New OTP sent successfully" });
-//   } catch (error) {
-//     console.error("Resend OTP error:", error);
-//     res.status(500).json({ success: false, message: "Error resending OTP" });
-//   }
-// });
-
 //REGISTER PAGE
 app.post("/register", async (req, res) => {
   try {
