@@ -49,8 +49,8 @@ const Dashboard = ({ children }) => {
                         </li>
                     </ul>
                 </div>
-                <div className='pl-7 pb-6 flex items-center'>
-                    <img className='w-5' src={arrowleft} alt="Left Arrow" />
+                <div className='pl-7 text-xl flex items-center'>
+                    <img className='w-5 mt-1' src={arrowleft} alt="Left Arrow" />
                     <button className='px-6 cursor-pointer'>Logout</button>
                 </div>
             </div>

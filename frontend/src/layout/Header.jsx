@@ -23,7 +23,7 @@ const Header = ({pageTitle}) => {
             </div>
             <div className='flex items-centre gap-10'>
               <div className='pr-15 text-right'>
-                <p className='text-xl font-bold text-green-600'>{username}</p>
+                <p className='text-md font-bold text-green-600'>{username}</p>
                 <p className='text-3xl font-bold'>{accno}</p>
               </div>
 

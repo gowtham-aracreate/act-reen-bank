@@ -11,24 +11,43 @@ import Transactions from '../components/Transactions.jsx';
 import BalanceCard from '../components/BalanceCard.jsx';
 import Income from '../assets/income.svg';
 import Expense from '../assets/expense.svg';
+import DropTop from '../assets/droptop.svg';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import dayjs from "dayjs";
 
-const OverviewPage = ({pageTitle}) => {
+
+const OverviewPage = ({ pageTitle }) => {
     const navigate = useNavigate();
     const [isHidden, setIsHidden] = useState(true);
+    const [isDropdownOpenDate, setIsDropdownOpenDate] = useState(false);
+    const [isDropdownOpenMonth, setIsDropdownOpenMonth] = useState(false);
+    // const [selectedDate, setSelectedDate] = useState("Feb 22 - Mar 25, 2023");
+    const [selectedMonth, setSelectedMonth] = useState("This Month")
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(dayjs().add(1, "month").toDate());
+
     const [accounts, setAccounts] = useState([
         { title: "Main Account", amount: 44500 },
         { title: "School Savings", amount: 44500 },
         { title: "Holiday Plan", amount: 44500 },
-    ]);
+    ]
+    );
 
     // Function to add a new account card
     const addAccount = () => {
         setAccounts([...accounts, { title: "New Account", amount: 0 }]);
     };
 
+    const monthRange = [
+        "This Month",
+        "February",
+        "January",
+    ]
+
     return (
         <Layout pageTitle={pageTitle}>
-                 {/* pass pageTitle to layout */}
+            {/* pass pageTitle to layout */}
 
             <div className='mt-0 flex items-top'>
 
@@ -49,13 +68,27 @@ const OverviewPage = ({pageTitle}) => {
                                     </button>
 
                                     {/* Data Picker with Dropdown */}
-                                    <div className='flex items-center gap-1 h-10 bg-gray-200 px-1 rounded-lg cursor-pointer'>
-                                        <img className='w-5 h-5' src={Calendar} alt="Calendar Icon" />
-                                        <span className='text-sm'>Feb 22 - Mar 25, 2023</span>
+                                    <div className='flex items-center gap-1 h-10 bg-gray-200 px-1 rounded-lg cursor-pointer' onClick={() => setIsDropdownOpenDate(!isDropdownOpenDate)}>
+                                        <img className='w-5 h-5 pl-1 ' src={Calendar} alt="Calendar Icon" />
+
+                                        <DatePicker
+                                            selected={startDate}
+                                            onChange={(date) => setStartDate(date)}
+                                            selectsStart
+                                            startDate={startDate}
+                                            endDate={endDate}
+                                            className="outline-none border-none bg-transparent pl-2 w-32 cursor-pointer"
+                                            dateFormat="MMM dd, yyyy"
+                                            
+                                        />
+
+
+                                        {/* <span className='text-sm'>{selectedDate}</span> */}
                                         <img className='w-5 h-5' src={DropDown} alt="Drop Down Icon" />
                                     </div>
                                 </div>
                             </div>
+
 
                             <div className="bg-green-100 p-8 rounded-xl shadow-md">
 
@@ -92,8 +125,8 @@ const OverviewPage = ({pageTitle}) => {
                             </div>
 
 
-                           {/* Account Cards */}
-                           <div className="grid grid-cols-3 gap-4 mt-2">
+                            {/* Account Cards */}
+                            <div className="grid grid-cols-3 gap-4 mt-2">
                                 {accounts.map((account, index) => (
                                     <BalanceCard key={index} title={account.title} amount={account.amount} isHidden={isHidden} />
                                 ))}
@@ -106,11 +139,39 @@ const OverviewPage = ({pageTitle}) => {
                                 <h3 className="pb-3 text-2xl font-semibold">Statistics</h3>
 
                                 {/* Data Picker with Dropdown */}
-                                <div className='flex items-center gap-1 bg-gray-200 px-1 rounded-lg cursor-pointer'>
-                                    <span className='text-sm'>This Month</span>
+                                <div className='flex items-center gap-1 bg-gray-200 px-1 rounded-lg cursor-pointer' onClick={() => setIsDropdownOpenMonth(!isDropdownOpenMonth)}>
+                                    <span className='text-sm'>{selectedMonth}</span>
                                     <img className='w-5 h-5' src={DropDown} alt="Drop Down Icon" />
                                 </div>
+
+                                {/* Dropdown for month*/}
+                                {isDropdownOpenMonth && (
+                                    <div className="absolute left-0 w-32 bg-white shadow-lg rounded-lg ml-187 mt-11 ">
+
+                                        {/* DropTop Icon to Close Dropdown */}
+                                        <div onClick={() => setIsDropdownOpenMonth(false)}>
+                                            <img className='w-5 h-5 ml-25  cursor-pointer' src={DropTop} alt="Drop top Icon" />
+                                        </div>
+
+                                        {monthRange.map((range, index) => (
+                                            <div key={index} className={`p-3 text-sm rounded-lg cursor-pointer ${selectedMonth === range ? "bg-gray-300" : "hover:bg-gray-200"
+                                                }`}
+                                                onClick={() => {
+                                                    setSelectedMonth(range);
+                                                    setIsDropdownOpenMonth(false);
+                                                }}
+                                            >
+                                                {range}
+
+                                            </div>
+
+                                        ))}
+
+                                    </div>
+                                )}
                             </div>
+
+
 
                             <div className='mt-2'>
                                 <div className="pb-6 flex items-center mt-1">

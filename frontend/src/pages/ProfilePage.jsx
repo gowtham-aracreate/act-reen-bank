@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import ArrowrightTrans from "../assets/trans-arrow.svg";
@@ -25,9 +25,25 @@ const ProfilePage = () => {
   const [selectedAccount, setSelectedAccount] = useState("main");
   const [modalStep, setModalStep] = useState(null); // State to control modal steps
   const [email, setEmail] = useState("");
+  const [username, setUserName] = useState("");
+  const [phone_no, setPhoneNo] = useState("");
+  const [gender, setGender] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({ password: "", confirmPassword: "" });
+
+  useEffect(() =>{
+      //Retrieve user details from local storage
+      const StoredUsername = localStorage.getItem('username')
+      const StoredEmail = localStorage.getItem('email');
+      const StoredPhoneNo = localStorage.getItem('phone_no');
+      const StoredGender = localStorage.getItem('gender');
+      setUserName(StoredUsername);
+      setEmail(StoredEmail);
+      setPhoneNo(StoredPhoneNo);
+      setGender(StoredGender);
+    },[]);
+
 
   // Function to handle reset password button click
   const handleResetPasswordClick = () => {
@@ -80,7 +96,7 @@ const ProfilePage = () => {
             </div>
 
             {/* User Info */}
-            <h2 className="text-2xl font-semibold mt-4">Maureen Oguche</h2>
+            <h2 className="text-2xl font-semibold mt-4">{username}</h2>
             <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-md text-sm font-medium">
               Pro User
             </span>
@@ -89,15 +105,15 @@ const ProfilePage = () => {
             <div className="mt-6 space-y-4 px-20">
               <div className="border-b pb-4 text-left">
                 <p className="text-sm font-semibold text-green-600">Email</p>
-                <p className="text-lg font-medium text-gray-700">oguchemaureen@gmail.com</p>
+                <p className="text-lg font-medium text-gray-700">{email}</p>
               </div>
               <div className="border-b pb-4 text-left">
                 <p className="text-sm font-semibold text-green-600">Phone Number</p>
-                <p className="text-lg font-medium text-gray-700">+234 803 041 1314</p>
+                <p className="text-lg font-medium text-gray-700">{phone_no}</p>
               </div>
               <div className="text-left">
                 <p className="text-sm font-semibold text-green-600">Gender</p>
-                <p className="text-lg font-medium text-gray-700">Female</p>
+                <p className="text-lg font-medium text-gray-700">{gender}</p>
               </div>
             </div>
 
