@@ -120,7 +120,7 @@ const ProfilePage = ({pageTitle}) => {
             {/* Reset Password Button */}
             <div className="mt-6">
               <button
-                className="bg-green-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-600 transition cursor-pointer"
+                className="bg-green-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-600 transition cursor-pointer"
                 onClick={handleResetPasswordClick} // Open modal on click
               >
                 Reset Password
