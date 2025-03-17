@@ -19,7 +19,7 @@ const transactions = [
   { id: 8, name: "Oluwaben Jamin", date: "06.Mar.2023 - 09:39", amount: 10000 },
 ];
 
-const ProfilePage = () => {
+const ProfilePage = ({pageTitle}) => {
   const navigate = useNavigate();
   const [isMainAccountHidden, setIsMainAccountHidden] = useState(true);
   const [selectedAccount, setSelectedAccount] = useState("main");
@@ -77,7 +77,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <Layout>
+    <Layout pageTitle={pageTitle}>
       <div className="flex">
         {/* Main container */}
         <div className="justify-center items-center min-h-screen mt-15 bg-gray-100">
