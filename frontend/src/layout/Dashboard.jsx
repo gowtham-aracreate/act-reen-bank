@@ -16,19 +16,19 @@ const Dashboard = ({ children }) => {
                         <h2 className="text-lg text-black-500 font-bold"></h2>
                     </div>
                     <ul className="mt-15 space-y-2">
-                        <li className="text-xl flex items-center p-3 font-bold hover:bg-gray-200 text-green-500 rounded-md text-black-500">
+                        <li className="text-xl cursor-pointer flex items-center p-3 font-bold hover:bg-gray-200 text-green-500 rounded-md text-black-500">
                             <img src={overviewimg} alt="Icon" className="h-6 w-6 mr-6" />
                             Overview
                         </li>
-                        <li className="text-xl flex items-center p-3 hover:bg-gray-200 rounded-md text-black-500">
+                        <li className="text-xl cursor-pointer flex items-center p-3 hover:bg-gray-200 rounded-md text-black-500">
                             <img src={accountimg} alt="Icon" className="h-6 w-6 mr-6" />
                             Accounts
                         </li>
-                        <li className="text-xl flex items-center p-2 hover:bg-gray-200 rounded-md text-black-500">
+                        <li className="text-xl cursor-pointer flex items-center p-2 hover:bg-gray-200 rounded-md text-black-500">
                             <img src={transactionimg} alt="Icon" className="h-10 w-10 mr-3" />
                             Transactions
                         </li>
-                        <li className="text-xl flex items-center p-3 hover:bg-gray-200 rounded-md text-black-500">
+                        <li className="text-xl cursor-pointer flex items-center p-3 hover:bg-gray-200 rounded-md text-black-500">
                             <img src={profileimg} alt="Icon" className="h-6 w-6 mr-6" />
                             Profile
                         </li>

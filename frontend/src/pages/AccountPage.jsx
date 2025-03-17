@@ -5,6 +5,9 @@ import Add from '../assets/add.svg';
 import Subtract from '../assets/subtract.svg';
 import AccountCard from '../components/AccountCard.jsx';
 import ArrowRightGreen from '../assets/arrow-right-green.svg';
+import ModalLayout from '../components/ModalLayout.jsx';
+import AddAccount from '../components/AddAccount.jsx';
+import CreatedSuccess from '../components/CreatedSuccess'; // Import the CreatedSuccess component
 
 // Sample account data
 const initialAccounts = [
@@ -37,87 +40,114 @@ const AccountPage = () => {
   const [accounts, setAccounts] = useState(initialAccounts);
   const [selectedAccount, setSelectedAccount] = useState(accounts[0].id);
 
-  const addAccount = () => {
-    const newAccount = { id: accounts.length + 1, title: "New Account", amount: 0 };
-    setAccounts([...accounts, newAccount]);
-  };
-
   const filteredTransactions = transactions.filter(transaction => transaction.accountId === selectedAccount);
 
   return (
     <Layout>
-      {/* Account Cards Section */}
-      <div className='pt-10 flex flex-row justify-between'>
-        <div className='ml-5 grid grid-cols-4 gap-4 mt-2'>
-          {accounts.map((account) => (
-            <div key={account.id} onClick={() => setSelectedAccount(account.id)} className={`cursor-pointer ${selectedAccount === account.id ? "border-l-7 border-blue-900" : ""}`}>
-              <AccountCard title={account.title} amount={account.amount} />
-            </div>
-          ))}
-
-          {/* Add Account Button */}
-          <div className='bg-gray-300 text-white px-10 rounded-lg cursor-pointer' onClick={addAccount}>
-            <div className='flex gap-12'>
-              <img className='mt-8' src={Plus} alt="Plus Icon" />
-              <button className='mt-7 text-gray-600 font-bold'>Add Account</button>
-            </div>
-            <div className='font-bold text-gray-600 text-xl pt-12'>₦ 00,000.00</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Transactions Section */}
-      <div className='p-6 w-287 pr-10'>
-        <div className='pt-10'>
-          <div className='flex justify-between items-center'>
-            <div className='font-bold text-2xl'>Transactions</div>
-            <div className='flex items-center gap-4'>
-              <button className='text-green-600'>View All</button>
-              <img src={ArrowRightGreen} alt="Arrow Icon" />
-            </div>
-          </div>
-
-          {/* Transactions List */}
-          <div className='pt-10 pb-6'>
-            {filteredTransactions.length > 0 ? (
-              filteredTransactions.map((transaction) => (
-                <div key={transaction.id} className='pb-2 flex items-center justify-between'>
-
-                  {/* Plus/Minus Icon */}
-                  <div className={`w-6 h-6 flex items-center justify-center rounded-full ${transaction.amount < 0 ? "bg-red-500" : "bg-green-500"}`}>
-                    <img src={transaction.amount < 0 ? Subtract : Add} alt="Transaction Icon" className='w-3 h-3' />
+      <ModalLayout>
+        {({ openModal, closeModal }) => (
+          <>
+            {/* Account Cards Section */}
+            <div className='pt-10 flex flex-row justify-between'>
+              <div className='ml-5 grid grid-cols-4 gap-4 mt-2'>
+                {accounts.map((account) => (
+                  <div key={account.id} onClick={() => setSelectedAccount(account.id)} className={`cursor-pointer ${selectedAccount === account.id ? "border-l-7 border-blue-900" : ""}`}>
+                    <AccountCard title={account.title} amount={account.amount} openModal={openModal} closeModal={closeModal} />
                   </div>
+                ))}
 
-                  {/* Transaction Details */}
-                  <div className='flex text-gray-400 justify-between flex-grow px-4'>
-                    <p>{transaction.name}</p>
-                    <p>{transaction.payment}</p>
-                    <p>{transaction.date}</p>
-                    <p className={`font-bold ${transaction.amount < 0 ? "text-red-600" : "text-green-600"}`}>
-                      {transaction.amount < 0
-                        ? `- ₦${Math.abs(transaction.amount).toLocaleString()}`
-                        : `+ ₦${transaction.amount.toLocaleString()}`}
-                    </p>
-                  </div>
+                {/* Add Account Button */}
+                <div className='bg-gray-300 text-white px-10 rounded-lg cursor-pointer'>
+                  <button
+                    className='ml-6 mt- text-gray-600 font-bold'
+                    onClick={() =>
+                      openModal(
+                        <AddAccount
+                          openModal={openModal}
+                          closeModal={closeModal}
+                          setUserData={(data) => {
+                            console.log("New Account Data:", data); 
+                            // Add the new account to the accounts list
+                            setAccounts((prev) => [
+                              ...prev,
+                              { id: prev.length + 1, title: data.accountName, amount: data.amount },
+                            ]);
 
-                  {/* Status */}
-                  <div className={`px-3 py-1 rounded-lg text-white font-bold ${transaction.status === "Completed"
-                      ? transaction.amount < 0
-                        ? "bg-red-500"  // Red for negative amount
-                        : "bg-green-500" // Green for positive amount
-                      : ""
-                    }`}>
-                    {transaction.status === "Completed" ? "Completed" : ""}
-                  </div>
-
+                            // Open the CreatedSuccess modal
+                            openModal(
+                              <CreatedSuccess
+                                closeModal={closeModal}
+                                userData={data} // Pass the new account data
+                              />
+                            );
+                          }}
+                        />
+                      )
+                    }
+                  >
+                    <div className='flex items-center gap-5'>
+                      <img className='mt-9 flex-col' src={Plus} alt="Plus Icon" />
+                      <div className='mt-9'>Add Account</div>
+                    </div>
+                    <div className='font-bold pb-5 text-gray-600 text-xl pt-12'>₦ 00,000.00</div>
+                  </button>
                 </div>
-              ))
-            ) : (
-              <p className='text-gray-500'>No transactions for this account</p>
-            )}
-          </div>
-        </div>
-      </div>
+              </div>
+            </div>
+
+            {/* Transactions Section */}
+            <div className='p-6 w-287 pr-10'>
+              <div className='pt-10'>
+                <div className='flex justify-between items-center'>
+                  <div className='font-bold text-2xl'>Transactions</div>
+                  <div className='flex items-center gap-4'>
+                    <button className='text-green-600'>View All</button>
+                    <img src={ArrowRightGreen} alt="Arrow Icon" />
+                  </div>
+                </div>
+
+                {/* Transactions List */}
+                <div className='pt-10 pb-6'>
+                  {filteredTransactions.length > 0 ? (
+                    filteredTransactions.map((transaction) => (
+                      <div key={transaction.id} className='pb-2 flex items-center justify-between'>
+                        {/* Plus/Minus Icon */}
+                        <div className={`w-6 h-6 flex items-center justify-center rounded-full ${transaction.amount < 0 ? "bg-red-500" : "bg-green-500"}`}>
+                          <img src={transaction.amount < 0 ? Subtract : Add} alt="Transaction Icon" className='w-3 h-3' />
+                        </div>
+
+                        {/* Transaction Details */}
+                        <div className='flex text-gray-400 justify-between flex-grow px-4'>
+                          <p>{transaction.name}</p>
+                          <p>{transaction.payment}</p>
+                          <p>{transaction.date}</p>
+                          <p className={`font-bold ${transaction.amount < 0 ? "text-red-600" : "text-green-600"}`}>
+                            {transaction.amount < 0
+                              ? `- ₦${Math.abs(transaction.amount).toLocaleString()}`
+                              : `+ ₦${transaction.amount.toLocaleString()}`}
+                          </p>
+                        </div>
+
+                        {/* Status */}
+                        <div className={`px-3 py-1 rounded-lg text-white font-bold ${transaction.status === "Completed"
+                          ? transaction.amount < 0
+                            ? "bg-red-500"  // Red for negative amount
+                            : "bg-green-500" // Green for positive amount
+                          : ""
+                          }`}>
+                          {transaction.status === "Completed" ? "Completed" : ""}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className='text-gray-500'>No transactions for this account</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </ModalLayout>
     </Layout>
   );
 };
