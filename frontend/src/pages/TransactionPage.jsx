@@ -48,7 +48,7 @@ export const TransactionPage = ({ pageTitle }) => {
         <div className='flex mt-17'>
           <div
             className={`flex bg-green-200  w-xs rounded-lg ml-5 px-4 py-6 justify-between items-center cursor-pointer 
-            ${selectedAccount === 'main' ? "border-l-7 border-l-blue-900" : "border-l-transparent"}`}
+            ${selectedAccount === 'main' ? "border-l-7 border-l-blue-900" : ""}`}
             onClick={() => setSelectedAccount('main')}>
             <div>
               <h3>Main Account</h3>
@@ -63,7 +63,7 @@ export const TransactionPage = ({ pageTitle }) => {
 
           <div
             className={`flex bg-green-200 w-xs rounded-lg ml-19 px-4 py-6 justify-between items-center cursor-pointer 
-            ${selectedAccount === 'school' ? "border-l-7 border-l-blue-900" : "border-l-transparent"}`}
+            ${selectedAccount === 'school' ? "border-l-7 border-l-blue-900" : ""}`}
             onClick={() => setSelectedAccount('school')}>
             <div>
               <h3>School Savings</h3>
@@ -78,7 +78,7 @@ export const TransactionPage = ({ pageTitle }) => {
 
           <div
             className={`flex bg-green-200 w-xs rounded-lg ml-19 px-4 py-6 justify-between items-center cursor-pointer 
-            ${selectedAccount === 'holiday' ? " border-l-7 border-l-blue-900" : "border-l-transparent"}`}
+            ${selectedAccount === 'holiday' ? " border-l-7 border-l-blue-900" : ""}`}
             onClick={() => setSelectedAccount('holiday')}>
             <div>
               <h3>Holiday Plan</h3>
