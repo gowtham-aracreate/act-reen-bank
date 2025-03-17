@@ -1,58 +1,70 @@
-import React, {useState} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import OtpInput from "react-otp-input";
+import OtpComponent from "../components/OtpComponent";
 import Layout from "../layout/leftsection";
 
 const EmailVerification = () => {
   const navigate = useNavigate();
-  const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
+  const email = localStorage.getItem("email") || ""; // Get email from localStorage
+  const [otpSent, setOtpSent] = useState(false);
+  const otpRequestInProgress = useRef(false); // Prevents multiple OTP requests
+
+  useEffect(() => {
+    if (email && !otpSent && !otpRequestInProgress.current) {
+      sendOtp(email);
+    }
+  }, [email, otpSent]);
+
+  const sendOtp = async (emailToSend) => {
+    if (!emailToSend.trim() || otpRequestInProgress.current) return;
+
+    otpRequestInProgress.current = true; // Prevent multiple requests
+
+    try {
+      const response = await fetch("http://localhost:3001/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailToSend }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        alert("OTP sent successfully!");
+        setOtpSent(true);
+      } else {
+        alert(data.message || "Failed to send OTP.");
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Error sending OTP. Please try again.");
+    } finally {
+      otpRequestInProgress.current = false; // Allow future requests
+    }
+  };
 
   const handleVerify = () => {
-    if (otp.length === 6) {
-      setError(""); // Clear error if OTP is valid
-      navigate("/accountdetails"); // Navigate to the next page
-    } else {
-      setError("Please enter a valid 6-digit OTP"); // Show error if OTP is incomplete
-    }
+    navigate("/accountdetails"); // Navigate to account details page after verification
+  };
+
+  const handleChangeEmail = () => {
+    localStorage.removeItem("email"); // Clear stored email
+    navigate("/register"); // Redirect to Register page
   };
 
   return (
     <Layout>
-      <div className="relative bg-white p-10 rounded-3xl shadow-lg w-[600px] px-10 z-10">
-        <h2 className="text-green-600 text-3xl font-bold mb-12 pt-20">Email Verification</h2>
-        <p className="text-gray-600 mb-4">
-          A 6-digit code has been sent to your email us****me@gmail.com <span className="text-green-600 cursor-pointer">Change</span>
-        </p>
-        <div className="flex justify-center mb-4">
-          <OtpInput
-            value={otp}
-            onChange={setOtp}
-            numInputs={6}
-            inputStyle={{
-              width: "50px",
-              height: "50px",
-              margin: "0 20px", // Adjusted space between boxes
-              fontSize: "20px",
-              textAlign: "center",
-              borderRadius: "8px",
-              border: "2px solid #8A8A8A", // Corrected border property
-              boxShadow: "0px 0px 10px rgba(240, 240, 240, 0.84)", // Corrected boxShadow property
-              outline: "none", required: "required",
-            }}
-            renderInput={(props) => <input {...props} />}
-          />
-        </div>
-        {/* Error message if OTP is incorrect */}
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-        <p className="text-green-600 text-sm mb-4">0:45 remaining</p>
-
-        <button onClick={handleVerify} className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg">Verify Email</button>
-
-        <p className="text-sm mt-4 pb-10">
-          Didn’t receive the code? <span className="text-green-600 cursor-pointer">Resend</span>
-        </p>
+      <div className="relative bg-white p-10 rounded-3xl shadow-lg w-[600px] px-10 z-10 flex justify-center items-center">
+        <OtpComponent
+          title="Email Verification"
+          buttonText="Verify Email"
+          initialEmail={email}
+          onVerify={handleVerify}
+          onResendOtp={() => {
+            setOtpSent(false); // Reset OTP sent flag for resend
+            sendOtp(email);
+          }}
+          onChangeEmail={handleChangeEmail} // Navigates to the Register page
+        />
       </div>
     </Layout>
   );

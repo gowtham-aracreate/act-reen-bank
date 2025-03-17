@@ -2,7 +2,7 @@ import React from "react";
 import Header from "./Header"; 
 import Dashboard from "./Dashboard"; 
 
-const Layout = ({ children }) => {
+const Layout = ({ children,  pageTitle  }) => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Static Sidebar */}
@@ -11,7 +11,8 @@ const Layout = ({ children }) => {
       {/* Main Content Area */}
       <div className="flex flex-col w-full">
         {/* Static Header */}
-        <Header />
+        <Header pageTitle={pageTitle}/>
+         {/* pass pageTitle to  header */}
 
         {/* Dynamic Page Content */}
         <div className="p-6">{children}</div>

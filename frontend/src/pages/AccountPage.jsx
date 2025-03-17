@@ -36,14 +36,14 @@ const transactions = [
   { id: 16, accountId: 2, name: "Oluwaben Jamin", payment: "Credit Card", date: "06.Mar.2023 - 09:39", amount: -10000, status: "Completed" },
 ];
 
-const AccountPage = () => {
+const AccountPage = ({pageTitle}) => {
   const [accounts, setAccounts] = useState(initialAccounts);
   const [selectedAccount, setSelectedAccount] = useState(accounts[0].id);
 
   const filteredTransactions = transactions.filter(transaction => transaction.accountId === selectedAccount);
 
   return (
-    <Layout>
+    <Layout pageTitle={pageTitle}>
       <ModalLayout>
         {({ openModal, closeModal }) => (
           <>
