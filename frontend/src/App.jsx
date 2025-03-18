@@ -13,7 +13,6 @@ import Resetpsw from "./pages/resetpsw";
 import Otp from "./pages/otp";
 import Changepsw from "./pages/changepsw";
 import Pswsuccess from "./pages/pswsuccess";
-import Logout from "./pages/logout";
 import Profile from "./pages/ProfilePage";
 import AccountDetails from "./pages/accountdetails";
 
@@ -35,7 +34,6 @@ function App() {
         <Route path="/otp" element={<Otp/>}/>
         <Route path="/changepsw" element={<Changepsw/>}/>
         <Route path="/pswsuccess" element={<Pswsuccess/>}/>
-        <Route path="/logout" element={<Logout/>}/>
         <Route path="/profile" element={<Profile pageTitle="Profile"/>}/>
         <Route path="/accountdetails" element={<AccountDetails/>}/>
       </Routes>
