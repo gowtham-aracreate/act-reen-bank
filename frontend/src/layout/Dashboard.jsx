@@ -106,14 +106,14 @@ const Dashboard = ({ children }) => {
                   <div className="flex justify-between">
                     <button
                       type="submit"
-                      className="bg-gray-300 text-white w-[58%] py-3 rounded-lg font-semibold text-lg mb-4 cursor-pointer"
+                      className="bg-gray-300 text-white w-[48%] py-3 rounded-lg font-semibold text-lg mb-4 cursor-pointer"
                       onClick={handleCloseModal}
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="bg-green-700 text-white w-[58%] py-3 rounded-lg font-semibold text-lg mb-4 cursor-pointer"
+                      className="bg-green-700 text-white w-[48%] py-3 rounded-lg font-semibold text-lg mb-4 cursor-pointer"
                       onClick={() => navigate("/login")}
                     >
                       Logout
