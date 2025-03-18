@@ -17,10 +17,10 @@ const Dashboard = ({ children }) => {
   const [modalStep, setModalStep] = useState(null); // State to control modal steps
   const [showModal, setShowModal] = useState(true); // State to toggle the overlay
 
-  //to check if a menu item is action
+  //to check if a menu item is active
   const isActive = (path) => location.pathname === path;
 
-  // Function to handle reset password button click
+  // Function to handle logout button click
   const logoutClick = () => {
     setModalStep(1); // Open the modal
   };
@@ -48,7 +48,7 @@ const Dashboard = ({ children }) => {
                             : "text-black-500"
                         }`}
             >
-              <img src={overviewimg} alt="Icon" className="h-6 w-6 mr-6 " />
+              <img src={isActive("/overviewpage") ? overviewimg1 : overviewimg} alt="Icon" className="h-6 w-6 mr-6 " />
               Overview
             </li>
             <li
@@ -60,7 +60,7 @@ const Dashboard = ({ children }) => {
                             : "text-black-500"
                         }`}
             >
-              <img src={accountimg} alt="Icon" className="h-6 w-6 mr-6" />
+              <img src={isActive("/accountpage") ? accountimg1 : accountimg} alt="Icon" className="h-6 w-6 mr-6" />
               Accounts
             </li>
             <li
@@ -72,7 +72,7 @@ const Dashboard = ({ children }) => {
                             : "text-black-500"
                         }`}
             >
-              <img src={transactionimg} alt="Icon" className="h-10 w-10 mr-3" />
+              <img src={isActive("/transaction") ? transactionimg1 : transactionimg} alt="Icon" className="h-10 w-10 mr-3" />
               Transactions
             </li>
             <li
@@ -84,7 +84,7 @@ const Dashboard = ({ children }) => {
                             : "text-black-500"
                         }`}
             >
-              <img src={profileimg} alt="Icon" className="h-6 w-6 mr-6" />
+              <img src={isActive("/profile") ? profileimg1 : profileimg} alt="Icon" className="h-6 w-6 mr-6" />
               Profile
             </li>
           </ul>
@@ -123,42 +123,6 @@ const Dashboard = ({ children }) => {
                       Logout
                     </button>
                   </div>
-            <div className="pt-0 ml-10 text-black-400 pl-2 p-11 min-h-screen flex flex-col justify-between">
-                <div>
-                    <div className="flex items-center">
-                        <img src={logo} alt="Logo" className="h-29 w-50 mr-2" />
-                        <h2 className="text-lg text-black-500 font-bold"></h2>
-                    </div>
-                    <ul className="mt-15 space-y-2">
-                        <li onClick={() => navigate("/overviewpage")} className={`text-xl flex items-center p-3 hover:bg-gray-200  rounded-md cursor-pointer w-45 
-                        ${isActive("/overviewpage") ? 'font-semibold text-green-600'  : 'text-black-500'}`}
-                        >
-                            <img src = {isActive("/overviewpage") ? overviewimg1 : overviewimg} alt="Icon" className="h-6 w-6 mr-6 " />
-                            Overview
-                        </li>
-                        <li onClick={() => navigate("/accountpage")} className={`text-xl flex items-center p-3 hover:bg-gray-200  rounded-md cursor-pointer w-45 
-                        ${isActive("/accountpage") ? 'font-semibold text-green-600' : 'text-black-500'}`}
-                        >
-                            <img src = {isActive("/accountpage") ? accountimg1 : accountimg} alt="Icon" className="h-6 w-6 mr-6" />
-                            Accounts
-                        </li>
-                        <li onClick={() => navigate("/transaction")} className={`text-xl flex items-center p-2 hover:bg-gray-200  rounded-md cursor-pointer w-45 
-                        ${isActive("/transaction") ? 'font-semibold text-green-600' : 'text-black-500'}`}
-                        >
-                            <img src = {isActive("/transaction") ? transactionimg1 : transactionimg} alt="Icon" className="h-10 w-10 mr-3" />
-                            Transactions
-                        </li>
-                        <li onClick={() => navigate("/profile")} className={`text-xl flex items-center p-3 hover:bg-gray-200  rounded-md cursor-pointer w-45 
-                        ${isActive("/profile") ? 'font-semibold text-green-600' : 'text-black-500'}`}
-                        >
-                            <img src = {isActive("/profile") ? profileimg1 : profileimg} alt="Icon" className="h-6 w-6 mr-6" />
-                            Profile
-                        </li>
-                    </ul>
-                </div>
-                <div className='pl-7 text-xl flex items-center'>
-                    <img className='w-5 mt-1' src={arrowleft} alt="Left Arrow" />
-                    <button className='px-6 cursor-pointer'>Logout</button>
                 </div>
               </div>
             )}
