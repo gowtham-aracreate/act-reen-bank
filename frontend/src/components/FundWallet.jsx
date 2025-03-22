@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import FundSuccess from "../components/FundSuccess";
+import axios from "axios"; // Import Axios for API calls
 
 const FundWallet = ({ openModal, closeModal, setUserData }) => {
   const [fundAmount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Direct Pay");
-  const [errors, setErrors] = useState({}); // Store errors separately
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false); // Loading state for API calls
   const [cardDetails, setCardDetails] = useState({
     cardNumber: "",
     holderName: "",
@@ -12,9 +14,10 @@ const FundWallet = ({ openModal, closeModal, setUserData }) => {
     cvv: "",
   });
 
-  const handleFund = () => {
-    let newErrors = {};
 
+  const handleFund = async () => {
+    let newErrors = {};
+    
     if (!fundAmount || isNaN(fundAmount) || Number(fundAmount) <= 0) {
       newErrors.fundAmount = "Please enter a valid amount.";
     }
@@ -31,15 +34,37 @@ const FundWallet = ({ openModal, closeModal, setUserData }) => {
       return;
     }
 
-    setUserData?.((prev) => ({
-      ...prev,
-      amount: fundAmount,
-      paymentMethod,
-      cardDetails,
-    }));
+    const user_id = localStorage.getItem("user_id"); 
+    if (!user_id) {
+    alert("User not logged in!");
+    return;
+    }
 
-    openModal(<FundSuccess fundAmount={fundAmount} openModal={openModal} closeModal={closeModal} />);
+    setLoading(true);//Start loading before making the request
+
+    try {
+      const response = await axios.post("http://localhost:3001/fund-wallet", {
+        user_id,  // Get the user ID from localStorage
+        amount: fundAmount, // Ensure the amount is a number
+        payment_method: paymentMethod, // Include the selected payment method
+      });
+      console.log("Response:", response.data); 
+      
+      if (response.data.success) {
+        setUserData?.((prev) => ({
+          ...prev,
+          balance: response.data.balance,
+        }));
+        openModal(<FundSuccess fundAmount={fundAmount} closeModal={closeModal} />);
+      } else {
+        alert(response.data.message || "Failed to fund wallet");
+      }
+    } catch (error) {
+      alert("Error funding wallet. Please try again.");
+    }
+    setLoading(false);
   };
+
 
   return (
     <div className="bg-white p-6 w-[330px]">

@@ -44,6 +44,13 @@ const Login = () => {
         const response = await axios.post("http://localhost:3001/login", { email, password });
 
         if (response.data.success) {
+          // Store user details in localStorage
+          localStorage.setItem("user_id", response.data.user_id);
+          localStorage.setItem("username", response.data.username);
+          localStorage.setItem("acc_no", response.data.acc_no);
+          localStorage.setItem("email", response.data.email);
+          localStorage.setItem("phone", response.data.phone_no);
+          localStorage.setItem("gender", response.data.gender);
           navigate("/overviewpage");
         }
       } catch (error) {

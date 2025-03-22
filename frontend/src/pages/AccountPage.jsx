@@ -36,11 +36,25 @@ const transactions = [
   { id: 16, accountId: 2, name: "Oluwaben Jamin", payment: "Credit Card", date: "06.Mar.2023 - 09:39", amount: -10000, status: "Completed" },
 ];
 
-const AccountPage = ({pageTitle}) => {
+const AccountPage = ({ pageTitle }) => {
   const [accounts, setAccounts] = useState(initialAccounts);
-  const [selectedAccount, setSelectedAccount] = useState(accounts[0].id);
-
+  const [selectedAccount, setSelectedAccount] = useState(accounts[0]?.id || null);
   const filteredTransactions = transactions.filter(transaction => transaction.accountId === selectedAccount);
+
+  const handleAddAccount = (data, openModal, closeModal) => {
+    console.log("New Account Data:", data);
+    
+    setAccounts((prevAccounts) => {
+      const newId = prevAccounts.length > 0 ? prevAccounts[prevAccounts.length - 1].id + 1 : 1;
+      const newAccount = { id: newId, title: data.accountName, amount: data.amount };
+      return [...prevAccounts, newAccount];
+    });
+
+    setSelectedAccount((prevAccounts) => prevAccounts.length + 1);
+
+    openModal(<CreatedSuccess closeModal={closeModal} userData={data} />);
+  };
+  
 
   return (
     <Layout pageTitle={pageTitle}>
@@ -57,30 +71,16 @@ const AccountPage = ({pageTitle}) => {
                 ))}
 
                 {/* Add Account Button */}
-                <div className='bg-gray-300 text-white px-10 rounded-lg cursor-pointer'>
+                
+                <div className="bg-gray-300 text-white px-10 rounded-lg cursor-pointer">
                   <button
-                    className='ml-6 mt- text-gray-600 font-bold'
+                    className="ml-6 mt- text-gray-600 font-bold"
                     onClick={() =>
                       openModal(
                         <AddAccount
                           openModal={openModal}
                           closeModal={closeModal}
-                          setUserData={(data) => {
-                            console.log("New Account Data:", data); 
-                            // Add the new account to the accounts list
-                            setAccounts((prev) => [
-                              ...prev,
-                              { id: prev.length + 1, title: data.accountName, amount: data.amount },
-                            ]);
-
-                            // Open the CreatedSuccess modal
-                            openModal(
-                              <CreatedSuccess
-                                closeModal={closeModal}
-                                userData={data} // Pass the new account data
-                              />
-                            );
-                          }}
+                          updateAccounts={(data) => handleAddAccount(data, openModal, closeModal)}
                         />
                       )
                     }
