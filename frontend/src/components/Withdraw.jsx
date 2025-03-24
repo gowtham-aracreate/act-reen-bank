@@ -5,9 +5,43 @@ const Withdraw = ({ openModal, closeModal, userData, setUserData }) => {
   const [accountName, setAccountName] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false); // Loading State for API Calls
 
-  const handleWithdraw = () => {
+  const handleWithdraw = async (accountId, amount) => {
     let newErrors = {};
+  //   const user_id = localStorage.getItem("user_id");
+  // if (!user_id) {
+  //   alert("User not logged in!");
+  //   return;
+  // }
+
+  // setLoading(true); // Start loading before making the request
+
+  // try {
+  //   const response = await axios.post("http://localhost:3001/withdraw", {
+  //     user_id,
+  //     accountId,
+  //     amount: Number(amount),
+  //   });
+
+  //   console.log("Response:", response.data);
+
+  //   if (response.data.success) {
+  //     setUserData?.((prev) => ({
+  //       ...prev,
+  //       accounts: prev.accounts.map((account) =>
+  //         account._id === accountId ? { ...account, amount: response.data.balance } : account
+  //       ),
+  //     }));
+  //     alert("Withdrawal successful!");
+  //   } else {
+  //     alert(response.data.message || "Failed to withdraw funds");
+  //   }
+  // } catch (error) {
+  //   alert("Error withdrawing funds. Please try again.");
+  // }
+
+  // setLoading(false);
 
     // Validate inputs
     if (!accountName.trim()) {

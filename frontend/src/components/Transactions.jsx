@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ArrowrightTrans from '../assets/trans-arrow.svg';
 import Pro from '../assets/pro.svg';
 import Arrowright from '../assets/arrowright.svg';
@@ -15,6 +15,37 @@ const transactions = [
 ];
 
 const Transactions = () => {
+  // const [loading, setLoading] = useState(false); // Loading State for API Calls 
+  // const user_id = localStorage.getItem("user_id");
+  // if (!user_id) {
+  //   alert("User not logged in!");
+  //   return;
+  // }
+
+  // setLoading(true); // Start loading before making the request
+
+  // try {
+  //   const response = await axios.post("http://localhost:3001/transactions", {
+  //     user_id,
+  //     accountId,
+  //   });
+
+  //   console.log("Transactions:", response.data);
+
+  //   if (response.data.success) {
+  //     setUserData?.((prev) => ({
+  //       ...prev,
+  //       transactions: response.data.transactions,
+  //     }));
+  //   } else {
+  //     alert(response.data.message || "Failed to fetch transactions");
+  //   }
+  // } catch (error) {
+  //   alert("Error fetching transactions. Please try again.");
+  // }
+
+  // setLoading(false);
+
   return (
     <div className='px-5 pl-18'>
       <div className='flex'>

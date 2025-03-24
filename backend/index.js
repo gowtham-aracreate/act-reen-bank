@@ -23,7 +23,7 @@ const connectDB = async () => {
 connectDB();
 
 
-// User Schema
+// USER SCHEMA FOR REGISTER AND ACCOUNT DETAILS PAGE :
 const UserSchema = new mongoose.Schema({
   username: {type: String},
   email: { type: String},
@@ -36,6 +36,8 @@ const UserSchema = new mongoose.Schema({
 // User Model
 const User = mongoose.model("UserDetails", UserSchema);
 
+
+// OTP SCHEMA :
 // OTP Schema (Stores OTPs separately)
 const OtpSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true }, // Each email has one OTP record
@@ -126,7 +128,7 @@ app.post("/verify-otp", async (req, res) => {
 });
 
 
-//REGISTER PAGE
+//REGISTER PAGE :
 app.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -158,8 +160,7 @@ app.post("/register", async (req, res) => {
 });
 
 
-
-// ADD ACCOUNT DETAILS PAGE
+// ADD ACCOUNT DETAILS PAGE :
 app.post("/acc_details", async (req, res) => {
   try {
     console.log("Received request body:", req.body);
@@ -200,7 +201,8 @@ app.post("/acc_details", async (req, res) => {
   }
 });
 
-// LOGIN PAGE
+
+// LOGIN PAGE :
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -225,7 +227,46 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// UPDATE PAGE
+
+// ACCOUNTS PAGE :
+// Define the Account schema
+const AccountSchema = new mongoose.Schema({
+  accountName: { type: String, required: true },
+  amount: { type: Number, required: true },
+});
+
+// Create the Account model
+const AccountModel = mongoose.model("Account", AccountSchema);
+
+// Add Account API
+app.post("/add-accounts", async (req, res) => {
+  try {
+    const { accountName, amount } = req.body;
+
+    // Validate required fields
+    if (!accountName || !amount) {
+      return res.status(400).json({ error: "Missing required fields: accountName and amount" });
+    }
+
+    // Validate amount is a number
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({ error: "Amount must be a valid number greater than 0" });
+    }
+
+    // Save account to the database
+    const newAccount = new AccountModel({ accountName, amount });
+    await newAccount.save();
+
+    // Respond with success message and the new account
+    res.status(201).json({ message: "Account added successfully", newAccount });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+// UPDATE PAGE :
 app.post("/profile", async (req, res) => {
   try {
     const { id, phone_no, gender } = req.body;
@@ -248,7 +289,7 @@ app.post("/profile", async (req, res) => {
   }
 });
 
-// Get All Users (for testing purposes)
+// Get All Users (for testing purposes) :
 app.get("/get_user", async (req, res) => {
   try {
     const data = await User.find();

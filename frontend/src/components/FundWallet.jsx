@@ -5,6 +5,7 @@ const FundWallet = ({ openModal, closeModal, setUserData }) => {
   const [fundAmount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Direct Pay");
   const [errors, setErrors] = useState({}); // Store errors separately
+  const [loading, setLoading] = useState(false); // Loading State for API Calls
   const [cardDetails, setCardDetails] = useState({
     cardNumber: "",
     holderName: "",
@@ -12,8 +13,41 @@ const FundWallet = ({ openModal, closeModal, setUserData }) => {
     cvv: "",
   });
 
-  const handleFund = () => {
+  const handleFund = async (accountId, amount) => {
     let newErrors = {};
+  //   const user_id = localStorage.getItem("user_id");
+  // if (!user_id) {
+  //   alert("User not logged in!");
+  //   return;
+  // }
+
+  // setLoading(true); // Start loading before making the request
+
+  // try {
+  //   const response = await axios.post("http://localhost:3001/fund-account", {
+  //     user_id,
+  //     accountId,
+  //     amount: Number(amount),
+  //   });
+
+  //   console.log("Response:", response.data);
+
+  //   if (response.data.success) {
+  //     setUserData?.((prev) => ({
+  //       ...prev,
+  //       accounts: prev.accounts.map((account) =>
+  //         account._id === accountId ? { ...account, amount: response.data.balance } : account
+  //       ),
+  //     }));
+  //     alert("Account funded successfully!");
+  //   } else {
+  //     alert(response.data.message || "Failed to fund account");
+  //   }
+  // } catch (error) {
+  //   alert("Error funding account. Please try again.");
+  // }
+
+  // setLoading(false);
 
     if (!fundAmount || isNaN(fundAmount) || Number(fundAmount) <= 0) {
       newErrors.fundAmount = "Please enter a valid amount.";

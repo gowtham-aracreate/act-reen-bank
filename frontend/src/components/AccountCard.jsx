@@ -1,26 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import EyeOpen from '../assets/eyeopen.svg';
 import EyeClose from '../assets/eyeclosed.svg';
 import Withdraw from '../components/Withdraw';
 import FundWallet from '../components/FundWallet';
 
+
 const AccountCard = ({ title, amount = 0, openModal, closeModal }) => {
     const [isHidden, setIsHidden] = useState(true);
+    const [accountName, setAccountName] = useState('');
+    const [amounts, setAmounts] = useState(0);
+
+    useEffect(() => {
+        const storedAccountName = localStorage.getItem("accountName");
+        const storedAmount = localStorage.getItem("amounts");
+
+        if (storedAccountName && storedAmount) {
+            setAccountName(String(storedAccountName));
+            setAmounts(Number(storedAmount)); // Parse the amount as a number
+        }
+    }, []);
+
+    const renderAccountInfo = (name, balance) => (
+        <div className='flex flex-row justify-between'>
+            <div>
+                <p className='text-indigo-900'>{name}</p>
+                <p className='text-xl font-bold'>
+                    {isHidden ? "XXXXX" : `₦ ${Number(balance).toLocaleString()}`}
+                </p>
+            </div>
+            <div>
+                <button onClick={() => setIsHidden(!isHidden)} className='flex items-center justify-center'>
+                    <img className='w-5 h-5 rounded-lg cursor-pointer' src={isHidden ? EyeClose : EyeOpen} alt="Toggle Balance Icon" />
+                </button>
+            </div>
+        </div>
+    );
 
     return (
         <div className='bg-green-100 p-7 rounded-lg text-center shadow-md'>
             {/* Account Info */}
-            <div className='flex flex-row justify-between'>
-                <div>
-                    <p className='text-indigo-900'>{title}</p>
-                    <p className='text-xl font-bold'>{isHidden ? "XXXXX" : `₦ ${Number(amount).toLocaleString()}`}</p>
-                </div>
-                <div>
-                    <button onClick={() => setIsHidden(!isHidden)} className='flex items-center justify-center'>
-                        <img className='w-5 h-5 rounded-lg cursor-pointer' src={isHidden ? EyeClose : EyeOpen} alt="Toggle Balance Icon" />
-                    </button>
-                </div>
-            </div>
+            {title ? (
+                renderAccountInfo(title, amount)
+            ) : (
+                renderAccountInfo(accountName, amounts)
+            )}
 
             {/* Action Buttons */}
             <div className='flex flex-row justify-between mt-5 gap-5'>
