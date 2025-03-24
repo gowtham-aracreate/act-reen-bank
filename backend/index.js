@@ -6,14 +6,14 @@ const nodemailer = require("nodemailer");
 
 const app = express();
 const port = 3001;
-   
+
 app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect("mongodb://localhost:27017/Reen-Bank"); 
+    await mongoose.connect("mongodb://localhost:27017/Reen-Bank");
     console.log("DB Connected");
   } catch (error) {
     console.error("DB Connection Error:", error);
@@ -25,12 +25,12 @@ connectDB();
 
 // User Schema
 const UserSchema = new mongoose.Schema({
-  username: {type: String},
-  email: { type: String},
-  password: {type: String},
-  acc_no: {type: Number },
-  phone_no: {type: Number },
-  gender: {type: String,}
+  username: { type: String },
+  email: { type: String },
+  password: { type: String },
+  acc_no: { type: Number },
+  phone_no: { type: Number },
+  gender: { type: String, }
 });
 
 // User Model
@@ -93,35 +93,35 @@ app.post("/send-otp", async (req, res) => {
 // Verify OTP Route
 app.post("/verify-otp", async (req, res) => {
   try {
-      const { email, otp } = req.body;
-      console.log("Received email:", email);
-      console.log("Received OTP:", otp);
+    const { email, otp } = req.body;
+    console.log("Received email:", email);
+    console.log("Received OTP:", otp);
 
-      const otpRecord = await Otp.findOne({ email });
+    const otpRecord = await Otp.findOne({ email });
 
-      if (!otpRecord) {
-          console.log("OTP not found for email:", email);
-          return res.status(400).json({ success: false, message: "OTP not found. Please request a new one." });
-      }
+    if (!otpRecord) {
+      console.log("OTP not found for email:", email);
+      return res.status(400).json({ success: false, message: "OTP not found. Please request a new one." });
+    }
 
-      console.log("Stored OTP:", otpRecord.otp);
+    console.log("Stored OTP:", otpRecord.otp);
 
-      if (otpRecord.otp.toString() !== otp.toString()) {
-          console.log("Entered OTP does not match stored OTP");
-          return res.status(400).json({ success: false, message: "Incorrect OTP. Please try again." });
-      }
+    if (otpRecord.otp.toString() !== otp.toString()) {
+      console.log("Entered OTP does not match stored OTP");
+      return res.status(400).json({ success: false, message: "Incorrect OTP. Please try again." });
+    }
 
-      // Mark user as verified
-      await User.findOneAndUpdate({ email }, { verified: true });
+    // Mark user as verified
+    await User.findOneAndUpdate({ email }, { verified: true });
 
-      // Delete OTP after verification
-      await Otp.deleteOne({ email });
+    // Delete OTP after verification
+    await Otp.deleteOne({ email });
 
-      res.json({ success: true, message: "OTP Verified!" });
+    res.json({ success: true, message: "OTP Verified!" });
 
   } catch (error) {
-      console.error("Server error in /verify-otp:", error);
-      res.status(500).json({ success: false, message: "Internal server error." });
+    console.error("Server error in /verify-otp:", error);
+    res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
 
@@ -150,7 +150,7 @@ app.post("/register", async (req, res) => {
     //delete newUser.password;
 
     res.status(201).json({ success: true, message: "User registered successfully", user_id: newUser._id });//we are sending the user_id to the frontend
-    
+
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -163,35 +163,35 @@ app.post("/register", async (req, res) => {
 app.post("/acc_details", async (req, res) => {
   try {
     console.log("Received request body:", req.body);
-    let {user_id, acc_no, phone_no, gender } = req.body;
+    let { user_id, acc_no, phone_no, gender } = req.body;
     acc_no = parseInt(acc_no);     // Convert to number
     phone_no = parseInt(phone_no); // Convert to number
 
-  // Validate input
-  if(!user_id || !acc_no || !phone_no || !gender) {
-    return res.status(400).json({ success: false, message: "Please fill all the fields" });
-  }
+    // Validate input
+    if (!user_id || !acc_no || !phone_no || !gender) {
+      return res.status(400).json({ success: false, message: "Please fill all the fields" });
+    }
 
-  const user = await User.findById(user_id);//findById is to find the user by id , we are getting the user_id from the frontend
+    const user = await User.findById(user_id);//findById is to find the user by id , we are getting the user_id from the frontend
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-  //check if account number or phone number already exists
-  const account = await User.findOne({ acc_no});//findOne is to find the user by account number
-  const phone = await User.findOne({ phone_no});
-  if (account || phone) {
-    return res.status(400).json({ 
-        success: false, 
-        message: "Account number or Phone number already exists" 
-    });
-}
+    //check if account number or phone number already exists
+    const account = await User.findOne({ acc_no });//findOne is to find the user by account number
+    const phone = await User.findOne({ phone_no });
+    if (account || phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Account number or Phone number already exists"
+      });
+    }
 
- user.acc_no = acc_no;
- user.phone_no = phone_no;
- user.gender = gender;
- await user.save();
-  
+    user.acc_no = acc_no;
+    user.phone_no = phone_no;
+    user.gender = gender;
+    await user.save();
+
 
     res.status(201).json({ success: true, message: "Account details updated successfully", user });
   } catch (error) {
@@ -218,10 +218,169 @@ app.post("/login", async (req, res) => {
     }
 
     // If credentials are valid, return a success response
-    res.status(200).json({ success: true, message: "Login successful", user });
+    res.status(200).json({
+      success: true, message: "Login successful",
+      user_id: user._id,
+      username: user.username,
+      acc_no: user.acc_no,
+      email: user.email,
+      phone_no: user.phone_no,
+      gender: user.gender,
+    });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+
+
+// Fund Wallet Schema (Updated)
+const FundSchema = new mongoose.Schema({
+  user_id: { type: String, required: true },
+  account_id: { type: String, required: true },
+  amount: { type: Number, required: true },
+  balance: { type: Number, required: true, default: 0 },
+  payment_method: { type: String, required: true, enum: ["Credit Card", "Direct Pay"] },
+  date_time: { type: Date, default: Date.now },
+  status: { type: String, required: true, enum: ["Completed", "Cancelled"], default: "Completed" }
+});
+
+const Fund = mongoose.model("Fund", FundSchema);
+
+app.post("/fund-wallet", async (req, res) => {
+  try {
+
+    const { user_id, account_id, amount, payment_method } = req.body;
+    console.log("Fund Wallet Request Received:", req.body);
+
+    // Validate input
+    if (!user_id || !account_id || !amount || isNaN(amount) || amount <= 0 || !payment_method) {
+      console.error("Invalid Input:", req.body);
+      return res.status(400).json({ success: false, message: "Invalid input" });
+    }
+
+     // 🔹 Check if the account exists
+     const account = await AccountModel.findById(account_id);
+     if (!account) {
+       console.error("Account Not Found! account_id:", account_id);
+       return res.status(400).json({ success: false, message: "Account not found!" });
+     }
+ 
+
+    // Check if the user exists
+    const user = await User.findById(user_id);
+    if (!user) {
+      console.error("User Not Found:", user_id);
+      return res.status(400).json({ success: false, message: "Invalid User" });
+    }
+
+    // Update account balance
+    account.balance += Number(amount);
+    await account.save();
+
+    // Create a new fund record (each fund should be stored separately)
+    const newFund = new Fund({
+      user_id,
+      account_id,  // Ensure account_id is stored
+      amount: Number(amount),
+      balance: Number(amount), // This should represent the funded amount only
+      payment_method,
+      status: "Completed",
+    });
+
+    await newFund.save();
+
+    res.json({ success: true, message: "Funds added successfully", fund: newFund, newBalance: account.balance });// Send the updated balance to the frontend
+  } catch (error) {
+    console.error("Fund Wallet Error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+
+
+const AccountSchema = new mongoose.Schema({
+  accountName: { type: String, required: true },
+  amount: { type: Number, required: true },
+  balance: { type: Number, default: 0 }, // Add balance field
+});
+
+const AccountModel = mongoose.model("Account", AccountSchema);
+
+// Add Account API
+app.post("/add-accounts", async (req, res) => {
+  try {
+      let { accountName, amount } = req.body;
+      if (!accountName || !amount) {
+          return res.status(400).json({ error: "Missing required fields" });
+      }
+      
+      // Save account to database (example)
+      const newAccount = new AccountModel({ accountName, amount, balance: amount });
+      await newAccount.save();
+
+      console.log("New Account Added:", newAccount); // Log account ID
+
+      res.status(201).json({
+        success: true,
+        message: "Account added successfully",
+        newAccount: {
+          _id: newAccount._id, // 🔹 Ensure the ID is included
+          accountName: newAccount.accountName,
+          amount: newAccount.amount,
+          balance: newAccount.balance,
+        }
+      });
+  } catch (error) {
+      console.error("Server error:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+const WithdrawSchema = new mongoose.Schema({
+  accountName: { type: String, required: true },
+  amount: { type: Number, required: true },
+  balance: { type: Number, required: true },
+  timestamp: { type: Date, default: Date.now }, // Add balance field
+});
+
+
+const WithdrawModel = mongoose.model('Withdraw', WithdrawSchema);
+
+// Withdraw endpoint
+app.post('/withdraw', async (req, res) => {
+  const { accountName, amount } = req.body;
+
+  if (!accountName ||!amount || amount <= 0) {
+    return res.status(400).json({ error: 'Invalid withdrawal request.' });
+  }
+
+  try {
+    // Find the account
+    const account = await AccountModel.findOne({ accountName });
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+
+    if (account.balance < amount) {
+      return res.status(400).json({ error: 'Insufficient balance' });
+    }
+
+    account.balance -= amount;
+    await account.save();
+
+    // Record the withdrawal transaction
+    const withdrawal = new WithdrawModel({ accountName, amount, balance: account.balance });
+    await withdrawal.save();
+
+    res.json({ 
+      message: 'Withdrawal successful', 
+      newBalance: account.balance,
+      withdrawalId: withdrawal._id, // Return withdrawal transaction ID
+     });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -258,6 +417,8 @@ app.get("/get_user", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
+
+
 
 // Start server
 app.listen(port, () => {
