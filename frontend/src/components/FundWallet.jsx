@@ -6,7 +6,7 @@ const FundWallet = ({ openModal, closeModal, setUserData }) => {
   const [fundAmount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Direct Pay");
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false); // Loading state for API calls
+  const [loading, setLoading] = useState(false);
   const [cardDetails, setCardDetails] = useState({
     cardNumber: "",
     holderName: "",
@@ -14,46 +14,47 @@ const FundWallet = ({ openModal, closeModal, setUserData }) => {
     cvv: "",
   });
 
-
-  const handleFund = async () => {
+  const validateInputs = () => {
     let newErrors = {};
-    
     if (!fundAmount || isNaN(fundAmount) || Number(fundAmount) <= 0) {
       newErrors.fundAmount = "Please enter a valid amount.";
     }
-
     if (paymentMethod === "Credit Card") {
       if (!cardDetails.cardNumber) newErrors.cardNumber = "Card number is required.";
       if (!cardDetails.holderName) newErrors.holderName = "Card holder name is required.";
       if (!cardDetails.expiryDate) newErrors.expiryDate = "Expiry date is required.";
       if (!cardDetails.cvv) newErrors.cvv = "CVV is required.";
     }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+  const handleFund = async () => {
+    if (!validateInputs()) return;
+
+    const user_id = localStorage.getItem("user_id"); 
+    const account_id = localStorage.getItem("account_id");
+
+    if (!user_id || !account_id) {
+      alert("User or Account not found!");
       return;
     }
 
-    const user_id = localStorage.getItem("user_id"); 
-    if (!user_id) {
-    alert("User not logged in!");
-    return;
-    }
-
-    setLoading(true);//Start loading before making the request
+    setLoading(true);
 
     try {
       const response = await axios.post("http://localhost:3001/fund-wallet", {
-        user_id,  // Get the user ID from localStorage
-        amount: fundAmount, // Ensure the amount is a number
-        payment_method: paymentMethod, // Include the selected payment method
+        user_id,
+        account_id,
+        amount: Number(fundAmount),
+        payment_method: paymentMethod,
       });
-      console.log("Response:", response.data); 
       
+      console.log("Response:", response.data);
       if (response.data.success) {
         setUserData?.((prev) => ({
           ...prev,
-          balance: response.data.balance,
+          balance: response.data.newBalance,
         }));
         openModal(<FundSuccess fundAmount={fundAmount} closeModal={closeModal} />);
       } else {
@@ -65,33 +66,25 @@ const FundWallet = ({ openModal, closeModal, setUserData }) => {
     setLoading(false);
   };
 
-
   return (
     <div className="bg-white p-6 w-[330px]">
       <h2 className="text-green-600 text-3xl font-semibold text-center mb-4 pb-4">Fund Wallet</h2>
       <p className="mb-2">Select Payment Method</p>
 
-      {/* Payment Method Radio Buttons */}
+      {/* Payment Method Selection */}
       <div className="flex gap-4 mb-4">
-        <label className="border-2 border-gray-400 shadow-md p-2 rounded-lg w-1/2 flex items-center gap-2 cursor-pointer">
-          <input className="w-3 h-3 accent-red-500"
-            type="radio"
-            name="paymentMethod"
-            value="Direct Pay"
-            checked={paymentMethod === "Direct Pay"}
-            onChange={() => setPaymentMethod("Direct Pay")}/>
-          Direct Pay
-        </label>
-
-        <label className="border-2 border-gray-400 shadow-md w-1/2 p-2 rounded-lg flex items-center gap-2 cursor-pointer">
-          <input className="w-3 h-3 accent-red-500"
-            type="radio"
-            name="paymentMethod"
-            value="Credit Card"
-            checked={paymentMethod === "Credit Card"}
-            onChange={() => setPaymentMethod("Credit Card")}/>
-          Credit Card
-        </label>
+        {["Direct Pay", "Credit Card"].map((method) => (
+          <label key={method} className="border-2 border-gray-400 shadow-md p-2 rounded-lg w-1/2 flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="paymentMethod"
+              value={method}
+              checked={paymentMethod === method}
+              onChange={() => setPaymentMethod(method)}
+            />
+            {method}
+          </label>
+        ))}
       </div>
 
       {/* Amount Input */}
@@ -105,78 +98,30 @@ const FundWallet = ({ openModal, closeModal, setUserData }) => {
       />
       {errors.fundAmount && <p className="text-red-600 text-sm">{errors.fundAmount}</p>}
 
-      {/* Show Credit Card Fields if 'Credit Card' is selected */}
+      {/* Credit Card Fields */}
       {paymentMethod === "Credit Card" && (
         <div className="mb-4">
-          <label className="block mb-1">Card Number</label>
-          <input
-            type="number"
-            className="border-2 border-gray-400 shadow-md p-2 w-full rounded-lg mb-1"
-            placeholder="0000 0000 0000 0000"
-            value={cardDetails.cardNumber}
-            onChange={(e) =>
-              setCardDetails({ ...cardDetails, cardNumber: e.target.value })
-            }
-          />
-          {errors.cardNumber && <p className="text-red-600 text-sm">{errors.cardNumber}</p>}
-
-          <label className="block mb-1 mt-3">Card Holder Name</label>
-          <input
-            type="text"
-            className="border-2 border-gray-400 shadow-md p-2 w-full rounded-lg mb-1"
-            placeholder="Enter card holder name"
-            value={cardDetails.holderName}
-            onChange={(e) =>
-              setCardDetails({ ...cardDetails, holderName: e.target.value })
-            }
-          />
-          {errors.holderName && <p className="text-red-600 text-sm">{errors.holderName}</p>}
-
-          <div className="flex gap-4">
-            <div>
-              <label className="block mb-1 mt-3">Expiry Date</label>
+          {["Card Number", "Card Holder Name", "Expiry Date", "CVV"].map((field, index) => (
+            <div key={index}>
+              <label className="block mb-1 mt-3">{field}</label>
               <input
-                type="text"
+                type={field === "CVV" ? "password" : "text"}
                 className="border-2 border-gray-400 shadow-md p-2 w-full rounded-lg mb-1"
-                placeholder="MM/YY"
-                value={cardDetails.expiryDate}
-                onChange={(e) =>
-                  setCardDetails({ ...cardDetails, expiryDate: e.target.value })
-                }
+                placeholder={field}
+                value={cardDetails[field.toLowerCase().replace(/ /g, "")]}
+                onChange={(e) => setCardDetails({ ...cardDetails, [field.toLowerCase().replace(/ /g, "")]: e.target.value })}
               />
-              {errors.expiryDate && <p className="text-red-600 text-sm">{errors.expiryDate}</p>}
+              {errors[field.toLowerCase().replace(/ /g, "")] && <p className="text-red-600 text-sm">{errors[field.toLowerCase().replace(/ /g, "")]}</p>}
             </div>
-
-            <div>
-              <label className="block mb-1 mt-3">CVV</label>
-              <input
-                type="password"
-                className="border-2 border-gray-400 shadow-md p-2 w-full rounded-lg mb-1"
-                placeholder="000"
-                value={cardDetails.cvv}
-                onChange={(e) =>
-                  setCardDetails({ ...cardDetails, cvv: e.target.value })
-                }
-              />
-              {errors.cvv && <p className="text-red-600 text-sm">{errors.cvv}</p>}
-            </div>
-          </div>
+          ))}
         </div>
       )}
 
       {/* Buttons */}
       <div className="flex justify-between mt-4">
-        <button
-          onClick={closeModal}
-          className="bg-gray-300 font-semibold text-black px-4 py-2 w-30 rounded-lg"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleFund}
-          className="bg-green-700  font-semibold text-white px-4 w-30 py-2 rounded-lg"
-        >
-          Fund
+        <button onClick={closeModal} className="bg-gray-300 font-semibold text-black px-4 py-2 w-30 rounded-lg">Cancel</button>
+        <button onClick={handleFund} className={`bg-green-700 font-semibold text-white px-4 w-30 py-2 rounded-lg ${loading ? "opacity-50 cursor-not-allowed" : ""}`} disabled={loading}>
+          {loading ? "Processing..." : "Fund"}
         </button>
       </div>
     </div>
@@ -184,4 +129,3 @@ const FundWallet = ({ openModal, closeModal, setUserData }) => {
 };
 
 export default FundWallet;
-

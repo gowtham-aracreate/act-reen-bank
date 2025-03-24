@@ -1,4 +1,4 @@
-import React, { use, useState,useEffect } from 'react';
+import React, {useState,useEffect } from 'react';
 import EyeOpen from '../assets/eyeopen.svg';
 import EyeClose from '../assets/eyeclosed.svg';
 import Withdraw from '../components/Withdraw';
@@ -8,16 +8,17 @@ const AccountCard = ({ title, amount = 0, openModal, closeModal }) => {
     const [isHidden, setIsHidden] = useState(true);
     const[accountName, setAccountName] = useState('');
     const[amounts, setAmounts] = useState(0);
-    
+
     useEffect(() => {
-        const storedAccountName = localStorage.getItem("accountName");
-        const storedAmount = localStorage.getItem("amounts");
+        const storedAccountName = localStorage.getItem("accountName")
+        const storedAmount = localStorage.getItem("amounts") 
 
         if (storedAccountName && storedAmount) {
             setAccountName(storedAccountName);
             setAmounts(storedAmount);
         }
     }, []);
+    
 
     return (
         <div className='bg-green-100 p-7 rounded-lg text-center shadow-md'>

@@ -6,8 +6,7 @@ const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
   const [accountName, setAccountName] = useState("");
   const [amount, setAmount] = useState("");
   const [errors, setErrors] = useState({});
-
-
+  
   const handleAdd = async () => {
     let newErrors = {};
 
@@ -26,7 +25,7 @@ const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
       setErrors(newErrors);
       return;
     }
-
+   
     // Create a new account object
     const newAccount = { accountName, amount: Number(amount) };
 
@@ -38,9 +37,13 @@ const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
         },
       });
 
-      // Store the added account in localStorage
-      localStorage.setItem("accountName", response.data.newAccount.accountName);
-      localStorage.setItem("amounts", response.data.newAccount.amount);
+      const addAccount = (newAccount) => {
+  const existingAccounts = JSON.parse(localStorage.getItem("accounts")) || []; // Retrieve previous accounts
+  const updatedAccounts = [...existingAccounts, newAccount]; // Append new data
+
+  localStorage.setItem("accounts", JSON.stringify(updatedAccounts)); // Save back to local storage
+  setAccounts(updatedAccounts); // Update state
+};
 
       // Update the account list on the AccountPage
       updateAccounts((prevAccounts) => [...prevAccounts, response.data.newAccount]);

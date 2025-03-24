@@ -45,8 +45,13 @@ const AccountPage = ({ pageTitle }) => {
     console.log("New Account Data:", data);
     
     setAccounts((prevAccounts) => {
-      const newId = prevAccounts.length > 0 ? prevAccounts[prevAccounts.length - 1].id + 1 : 1;
-      const newAccount = { id: newId, title: data.accountName, amount: data.amount };
+      const maxId = prevAccounts.length > 0 ? Math.max(...prevAccounts.map(acc => acc.id)) : 0;
+      const newId = maxId + 1; // Ensure IDs continue from the last existing one
+      const newAccount = {
+        id: newId,
+        title: data.accountName,
+        amount: data.amount
+      };
       return [...prevAccounts, newAccount];
     });
 

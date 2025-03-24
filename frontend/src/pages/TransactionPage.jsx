@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '../layout/Layout'
 import EyeOpen from '../assets/eyeopen.svg';
 import EyeClose from '../assets/eyeclosed.svg';
@@ -38,8 +38,20 @@ export const TransactionPage = ({ pageTitle }) => {
   const [isMainAccountHidden, setIsMainAccountHidden] = useState(true);
   const [isSchoolSavingsHidden, setIsSchoolSavingsHidden] = useState(true);
   const [isHolidayPlanHidden, setIsHolidayPlanHidden] = useState(true);
+  const [isHidden, setIsHidden] = useState(true);
   const [selectedAccount, setSelectedAccount] = useState('main');
+  const [accountName, setAccountName] = useState('');
+  const [amounts, setAmounts] = useState(0);
 
+  useEffect(() => {
+    const storedAccountName = localStorage.getItem("accountName")
+    const storedAmount = localStorage.getItem("amounts")
+
+    if (storedAccountName && storedAmount) {
+      setAccountName(storedAccountName);
+      setAmounts(storedAmount);
+    }
+  }, []);
 
 
   return (
@@ -87,6 +99,18 @@ export const TransactionPage = ({ pageTitle }) => {
             <div>
               <button onClick={() => setIsHolidayPlanHidden(!isHolidayPlanHidden)} className='w-10 h-10 mx-6 bg-gray-200 rounded-lg flex items-center justify-center'>
                 <img className='w-5 h-5 bg-gray-200 rounded-lg cursor-pointer' src={isHolidayPlanHidden ? EyeClose : EyeOpen} alt="Toggle Balance Icon" />
+              </button>
+            </div>
+          </div>
+
+          <div className='flex bg-green-200  w-xs rounded-lg ml-5 px-4 py-6 justify-between items-center cursor-pointer'>
+            <div>
+              <p className='text-indigo-900'>{accountName}</p>
+              <p className='text-xl font-bold'>{isHidden ? "XXXXX" : `₦ ${Number(amounts).toLocaleString()}`}</p>
+            </div>
+            <div>
+              <button onClick={() => setIsHidden(!isHidden)} className='flex items-center justify-center'>
+                <img className='w-5 h-5 rounded-lg cursor-pointer' src={isHidden ? EyeClose : EyeOpen} alt="Toggle Balance Icon" />
               </button>
             </div>
           </div>

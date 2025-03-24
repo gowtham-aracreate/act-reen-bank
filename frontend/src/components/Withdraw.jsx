@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import WithdrawSuccess from '../components/WithdrawSuccess';
 
 const Withdraw = ({ openModal, closeModal, userData, setUserData }) => {
   const [accountName, setAccountName] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const handleWithdraw = () => {
+  const handleWithdraw = async () => {
     let newErrors = {};
 
     // Validate inputs
@@ -17,20 +19,29 @@ const Withdraw = ({ openModal, closeModal, userData, setUserData }) => {
       newErrors.withdrawAmount = "Enter a valid withdrawal amount.";
     }
 
-    // If errors exist, show messages
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
+   
+    setLoading(true);
+    try {
+      const response = await axios.post("http://localhost:3001/withdraw", {
+        accountName,
+        amount: Number(withdrawAmount),
+      });
 
-    // Deduct amount from user's balance
-    setUserData?.((prev) => ({
-      ...prev,
-      amount: Number(prev.amount) - Number(withdrawAmount),
-    }));
+      // Update user balance if withdrawal is successful
+      setUserData?.((prev) => ({
+        ...prev,
+        balance: response.data.newBalance, // Ensure backend sends `newBalance`
+      }));
 
-    // Show success modal
-    openModal(<WithdrawSuccess withdrawAmount={withdrawAmount} closeModal={closeModal} />);
+      openModal(<WithdrawSuccess withdrawAmount={withdrawAmount} closeModal={closeModal} />);
+    } catch (error) {
+      setErrors({ api: error.response?.data?.message || "Withdrawal failed. Try again later." });
+    }
+    setLoading(false);
   };
 
   return (
