@@ -125,6 +125,94 @@ app.post("/verify-otp", async (req, res) => {
   }
 });
 
+// app.post("/verify-otp", async (req, res) => {
+//   const { email, otp } = req.body;
+
+//   console.log("Received email:", email); // Debugging
+//   console.log("Received OTP:", otp);
+
+//   if (!email || !otp) {
+//     return res.status(400).json({ message: "Email and OTP are required!" });
+//   }
+
+//   const storedOtp = await Otp.findOne({ email, otp });
+//   if (!storedOtp) {
+//     return res.status(400).json({ message: "OTP not found. Please request a new one." });
+//   }
+
+//   res.json({ success: true, message: "OTP verified successfully" });
+// });
+
+
+// // Verify OTP Route
+// app.post("/verify-otp", async (req, res) => {
+//   try {
+//       const { email, otp } = req.body;
+//       console.log("Received email:", email);
+//       console.log("Received OTP:", otp);
+
+//       const otpRecord = await Otp.findOne({ email });
+
+//       if (!otpRecord) {
+//           console.log("OTP not found for email:", email);
+//           return res.status(400).json({ success: false, message: "OTP not found. Please request a new one." });
+//       }
+
+//       console.log("Stored OTP:", otpRecord.otp);
+
+//       if (otpRecord.otp.toString() !== otp.toString()) {
+//           console.log("Entered OTP does not match stored OTP");
+//           return res.status(400).json({ success: false, message: "Incorrect OTP. Please try again." });
+//       }
+
+//       // Mark user as verified
+//       await User.findOneAndUpdate({ email }, { verified: true });
+
+//       // Delete OTP after verification
+//       await Otp.deleteOne({ email });
+
+//       res.json({ success: true, message: "OTP Verified!" });
+
+//   } catch (error) {
+//       console.error("Server error in /verify-otp:", error);
+//       res.status(500).json({ success: false, message: "Internal server error." });
+//   }
+// });
+
+
+//Reset Password
+app.post("/reset-password", async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    console.log("Resetting password for:", email);
+
+    // Validate input
+    if (!email || !newPassword) {
+      return res.status(400).json({ success: false, message: "Email and new password are required." });
+    }
+
+    // Find user in database
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    // Hash new password before saving
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password in database
+    await User.updateOne({ email }, { password: hashedPassword });
+
+    res.json({ success: true, message: "Password has been successfully reset!" });
+  } catch (error) {
+    console.error("Error in /reset-password:", error);
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
 
 //REGISTER PAGE
 app.post("/register", async (req, res) => {
