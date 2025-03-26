@@ -44,7 +44,7 @@ const Dashboard = ({ children }) => {
               className={`text-xl flex items-center p-3 hover:bg-gray-200  rounded-md cursor-pointer w-45 
                         ${
                           isActive("/overviewpage")
-                            ? "font-bold text-green-600"
+                            ? "font-semibold text-green-600"
                             : "text-black-500"
                         }`}
             >
@@ -56,7 +56,7 @@ const Dashboard = ({ children }) => {
               className={`text-xl flex items-center p-3 hover:bg-gray-200  rounded-md cursor-pointer w-45 
                         ${
                           isActive("/accountpage")
-                            ? "font-bold text-green-600"
+                            ? "font-semibold text-green-600"
                             : "text-black-500"
                         }`}
             >
@@ -68,7 +68,7 @@ const Dashboard = ({ children }) => {
               className={`text-xl flex items-center p-3 hover:bg-gray-200  rounded-md cursor-pointer w-45 
                         ${
                           isActive("/transaction")
-                            ? "font-bold text-green-600"
+                            ? "font-semibold text-green-600"
                             : "text-black-500"
                         }`}
             >
@@ -80,7 +80,7 @@ const Dashboard = ({ children }) => {
               className={`text-xl flex items-center p-3 hover:bg-gray-200  rounded-md cursor-pointer w-45 
                         ${
                           isActive("/profile")
-                            ? "font-bold text-green-600"
+                            ? "font-semibold text-green-600"
                             : "text-black-500"
                         }`}
             >

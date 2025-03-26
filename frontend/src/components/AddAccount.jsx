@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import CreatedSuccess from "../components/CreatedSuccess"; // Import the CreatedSuccess component
+import React, { useState} from "react";
+import axios from "axios";
+import CreatedSuccess from "../components/CreatedSuccess";
 
-const AddAccount = ({ openModal, closeModal, setUserData }) => {
+const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
   const [accountName, setAccountName] = useState("");
   const [amount, setAmount] = useState("");
   const [errors, setErrors] = useState({});
@@ -24,67 +25,50 @@ const AddAccount = ({ openModal, closeModal, setUserData }) => {
       setErrors(newErrors);
       return;
     }
-  
-    // Create new account data
-    const newAccount = {
-      accountName: accountName.trim(),
-      amount: Number(amount),
-    };
-  
+
+    // Create a new account object
+    const newAccount = { accountName, amount: Number(amount) };
+
     try {
-      // Send the new account data to the backend
-      const response = await fetch("http://localhost:3001/add-accounts", {
-        method: "POST",
+      // Send data to the backend API
+      const response = await axios.post("http://localhost:3001/add-accounts", newAccount, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newAccount),
       });
-  
-      if (!response.ok) {
-        throw new Error(`Failed to add account: ${response.statusText}`);
-      }
-  
-      const data = await response.json();
-      console.log("Account added successfully:", data);
-  
-      // ✅ Close the AddAccount modal and then open CreatedSuccess
+
+      // Store the added account in localStorage
+      localStorage.setItem("accountName", response.data.newAccount.accountName);
+      localStorage.setItem("amounts", response.data.newAccount.amount);
+      localStorage.setItem("account_id", response.data.newAccount._id);
+
+      // Update the account list on the AccountPage
+      updateAccounts((prevAccounts) => [...prevAccounts, response.data.newAccount]);
+      console.log("Response Data:", response.data);
+
+      // Close the AddAccount modal
       closeModal();
-      setTimeout(() => {
-        openModal(
-          <CreatedSuccess closeModal={closeModal} userData={newAccount} />
-        );
-      }, 300); // Small delay to ensure smooth transition
-  
-      // Update the account list in the parent component (if setUserData is provided)
-      if (setUserData) {
-        setUserData((prevData) =>
-          Array.isArray(prevData) ? [...prevData, newAccount] : [newAccount]
-        );
-      }
-  
-      // Clear the form fields
+
+      // Open the CreatedSuccess modal
+      openModal(<CreatedSuccess closeModal={closeModal} userData={response.data} />);
+
+      // Clear form fields
       setAccountName("");
       setAmount("");
       setErrors({});
     } catch (error) {
       console.error("Error adding account:", error);
-      setErrors({ submit: "Failed to add account. Please try again." });
     }
   };
   
 
   return (
     <div className="bg-white p-6 w-[300px] rounded-lg">
-      <h2 className="text-green-600 text-3xl font-semibold text-center mb-4">
-        Add Account
-      </h2>
+      <h2 className="text-green-600 text-3xl font-semibold text-center mb-4">Add Account</h2>
 
-      {/* Account Name */}
+      {/* Account Name Input */}
       <div className="mb-4">
-        <label className="block font-medium text-gray-700 mb-1">
-          Account Name
-        </label>
+        <label className="block font-medium text-gray-700 mb-1">Account Name</label>
         <input
           type="text"
           placeholder="Enter name"
@@ -92,12 +76,10 @@ const AddAccount = ({ openModal, closeModal, setUserData }) => {
           onChange={(e) => setAccountName(e.target.value)}
           className="w-full border-2 border-gray-400 shadow-md rounded-lg px-3 py-2"
         />
-        {errors.accountName && (
-          <p className="text-red-600 text-sm mt-1">{errors.accountName}</p>
-        )}
+        {errors.accountName && <p className="text-red-600 text-sm mt-1">{errors.accountName}</p>}
       </div>
 
-      {/* Amount */}
+      {/* Amount Input */}
       <div className="mb-4">
         <label className="block font-medium text-gray-700 mb-1">Amount</label>
         <input
@@ -107,23 +89,15 @@ const AddAccount = ({ openModal, closeModal, setUserData }) => {
           onChange={(e) => setAmount(e.target.value || "")} // Handle empty input
           className="w-full border-2 border-gray-400 shadow-md rounded-lg px-3 py-2"
         />
-        {errors.amount && (
-          <p className="text-red-600 text-sm mt-1">{errors.amount}</p>
-        )}
+        {errors.amount && <p className="text-red-600 text-sm mt-1">{errors.amount}</p>}
       </div>
 
-      {/* Buttons */}
+      {/* Action Buttons */}
       <div className="pt-4 flex justify-between">
-        <button
-          className="bg-gray-300 font-semibold text-black px-4 py-2 w-30 rounded-lg"
-          onClick={closeModal} // Only closes the modal, no data is saved
-        >
+        <button className="bg-gray-300 font-semibold text-black px-4 py-2 w-30 rounded-lg" onClick={closeModal}>
           Cancel
         </button>
-        <button
-          className="bg-green-700 font-semibold text-white px-4 py-2 w-30 rounded-lg"
-          onClick={handleAdd} // Fixed: handleAdd now uses the correct values
-        >
+        <button className="bg-green-700 font-semibold text-white px-4 py-2 w-30 rounded-lg" onClick={handleAdd}>
           Add
         </button>
       </div>

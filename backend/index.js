@@ -235,38 +235,108 @@ const AccountSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
 });
 
-// Create the Account model
 const AccountModel = mongoose.model("Account", AccountSchema);
 
-// Add Account API
+// Get All Accounts
+app.get("/accounts", async (req, res) => {
+  try {
+    const accounts = await AccountModel.find();
+    res.status(200).json(accounts);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Add Account
 app.post("/add-accounts", async (req, res) => {
   try {
     const { accountName, amount } = req.body;
-
-    // Validate required fields
     if (!accountName || !amount) {
-      return res.status(400).json({ error: "Missing required fields: accountName and amount" });
+      return res.status(400).json({ error: "Missing required fields" });
     }
-
-    // Validate amount is a number
-    if (isNaN(amount) || amount <= 0) {
-      return res.status(400).json({ error: "Amount must be a valid number greater than 0" });
-    }
-
-    // Save account to the database
     const newAccount = new AccountModel({ accountName, amount });
     await newAccount.save();
+    
+    res.status(201).json({
+      success: true,
+      message: "Account added successfully",
+      newAccount: {
+        _id: newAccount._id // 🔹 Ensure the ID is included
+      }
+  });
 
-    // Respond with success message and the new account
-    res.status(201).json({ message: "Account added successfully", newAccount });
   } catch (error) {
-    console.error("Server error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 
-// UPDATE PAGE :
+// FUND WALLET MODAL :
+// Fund Wallet Schema (Updated)
+const FundSchema = new mongoose.Schema({
+  user_id: { type: String, required: true },
+  account_id: { type: String, required: true },
+  amount: { type: Number, required: true },
+  balance: { type: Number, required: true, default: 0 },
+  payment_method: { type: String, required: true, enum: ["Credit Card", "Direct Pay"] },
+  date_time: { type: Date, default: Date.now },
+  status: { type: String, required: true, enum: ["Completed", "Cancelled"], default: "Completed" }
+});
+
+const Fund = mongoose.model("Fund", FundSchema);
+
+app.post("/fund-wallet", async (req, res) => {
+  try {
+
+    const { user_id, account_id, amount, payment_method } = req.body;
+    console.log("Fund Wallet Request Received:", req.body);
+
+    // Validate input
+    if (!user_id || !account_id || !amount || isNaN(amount) || amount <= 0 || !payment_method) {
+      console.error("Invalid Input:", req.body);
+      return res.status(400).json({ success: false, message: "Invalid input" });
+    }
+
+     // 🔹 Check if the account exists
+     const account = await AccountModel.findById(account_id);
+     if (!account) {
+       console.error("Account Not Found! account_id:", account_id);
+       return res.status(400).json({ success: false, message: "Account not found!" });
+     }
+ 
+
+    // Check if the user exists
+    const user = await User.findById(user_id);
+    if (!user) {
+      console.error("User Not Found:", user_id);
+      return res.status(400).json({ success: false, message: "Invalid User" });
+    }
+
+    // Update account balance
+    account.balance += Number(amount);
+    await account.save();
+
+    // Create a new fund record (each fund should be stored separately)
+    const newFund = new Fund({
+      user_id,
+      account_id,  // Ensure account_id is stored
+      amount: Number(amount),
+      balance: Number(amount), // This should represent the funded amount only
+      payment_method,
+      status: "Completed",
+    });
+
+    await newFund.save();
+
+    res.json({ success: true, message: "Funds added successfully", fund: newFund, newBalance: account.balance });// Send the updated balance to the frontend
+  } catch (error) {
+    console.error("Fund Wallet Error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+
+// PROFILE PAGE :
 app.post("/profile", async (req, res) => {
   try {
     const { id, phone_no, gender } = req.body;
