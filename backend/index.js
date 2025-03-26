@@ -343,50 +343,106 @@ app.post("/fund-wallet", async (req, res) => {
   }
 });
 
-
-//WITHDRAW :
 const WithdrawSchema = new mongoose.Schema({
-  accountName: { type: String, required: true },
+  user_id: { type: String, required: true },
+  account_id: { type: String, required: true },
   amount: { type: Number, required: true },
   balance: { type: Number, required: true },
-  timestamp: { type: Date, default: Date.now }, // Add balance field
+  date_time: { type: Date, default: Date.now },
+  status: { 
+    type: String, 
+    required: true, 
+    enum: ["Completed", "Failed", "Pending"], 
+    default: "Completed" 
+  }
 });
 
-const WithdrawModel = mongoose.model('Withdraw', WithdrawSchema);
+const Withdraw = mongoose.model("Withdraw", WithdrawSchema);
 
-// Withdraw endpoint
-app.post('/withdraw', async (req, res) => {
-  const { accountName, amount } = req.body;
-
-  if (!accountName ||!amount || amount <= 0) {
-    return res.status(400).json({ error: 'Invalid withdrawal request.' });
-  }
-
+app.post("/withdraw", async (req, res) => {
   try {
-    // Find the account
-    const account = await AccountModel.findOne({ accountName });
+    const { user_id, account_id, amount } = req.body;
+    console.log("Withdrawal Request:", { user_id, account_id, amount });
+
+    // Validate input
+    if (!user_id || !account_id || !amount || isNaN(amount) || amount <= 0) {
+      console.error("Invalid withdrawal request");
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid input. Provide valid user_id, account_id, and positive amount." 
+      });
+    }
+
+    // Find account
+    const account = await AccountModel.findOne({ _id: account_id });
     if (!account) {
-      return res.status(404).json({ error: 'Account not found' });
+      console.error("Account not found:", account_id);
+      return res.status(404).json({ 
+        success: false, 
+        message: "Account not found" 
+      });
     }
 
-    if (account.balance < amount) {
-      return res.status(400).json({ error: 'Insufficient balance' });
+    //  // Verify that the account has a user_id before calling `.toString()`
+    //  if (!account.user_id) {
+    //   console.error("Account does not have a valid user_id:", account);
+    //   return res.status(400).json({ 
+    //     success: false, 
+    //     message: "Account is not associated with a user" 
+    //   });
+    // }
+
+    // // Verify account ownership
+    // if (account.user_id.toString() !== user_id.toString()) {
+    //   console.error("Account ownership mismatch");
+    //   return res.status(403).json({ 
+    //     success: false, 
+    //     message: "Account does not belong to user" 
+    //   });
+    // }
+
+    // Check sufficient balance
+    const withdrawalAmount = Number(amount);
+    if (withdrawalAmount > account.balance) {
+      console.error("Insufficient balance");
+      return res.status(400).json({ 
+        success: false, 
+        message: "Insufficient balance",
+        currentBalance: account.balance 
+      });
     }
 
-    account.balance -= amount;
+    // Update account balance
+    account.balance -= withdrawalAmount;
     await account.save();
 
-    // Record the withdrawal transaction
-    const withdrawal = new WithdrawModel({ accountName, amount, balance: account.balance });
+    // Record withdrawal
+    const withdrawal = new Withdraw({
+      user_id,
+      account_id,
+      amount: withdrawalAmount,
+      balance: withdrawalAmount,
+      status: "Completed"
+    });
     await withdrawal.save();
 
-    res.json({ 
-      message: 'Withdrawal successful', 
+    // Success response
+    res.status(200).json({
+      success: true,
+      message: "Withdrawal successful",
+      withdrawal_id: withdrawal._id,
+      amount: withdrawal.amount,
       newBalance: account.balance,
-      withdrawalId: withdrawal._id, // Return withdrawal transaction ID
-     });
+      date_time: withdrawal.date_time
+    });
+
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.error("Withdrawal error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Internal server error",
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
   }
 });
 

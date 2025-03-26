@@ -65,7 +65,6 @@ const AccountPage = ({ pageTitle }) => {
   
         setAccounts((prevAccounts) => [...prevAccounts, response.data.newAccount]);
         setSelectedAccount(response.data.newAccount._id);
-        
         openModal(<CreatedSuccess key={response.data.newAccount._id} closeModal={closeModal} userData={data} />);
       })
       .catch((error) => {
@@ -73,7 +72,7 @@ const AccountPage = ({ pageTitle }) => {
       });
   };
 
-  
+
   const filteredTransactions = transactions.filter(transaction => transaction.accountId === selectedAccount);
 
   return (
