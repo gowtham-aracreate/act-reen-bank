@@ -303,7 +303,6 @@ app.post("/fund-wallet", async (req, res) => {
 const AccountSchema = new mongoose.Schema({
   accountName: { type: String, required: true },
   amount: { type: Number, required: true },
-  balance: { type: Number, default: 0 }, // Add balance field
 });
 
 const AccountModel = mongoose.model("Account", AccountSchema);
@@ -317,7 +316,7 @@ app.post("/add-accounts", async (req, res) => {
       }
       
       // Save account to database (example)
-      const newAccount = new AccountModel({ accountName, amount, balance: amount });
+      const newAccount = new AccountModel({ accountName, amount});
       await newAccount.save();
 
       console.log("New Account Added:", newAccount); // Log account ID
@@ -329,12 +328,22 @@ app.post("/add-accounts", async (req, res) => {
           _id: newAccount._id, // 🔹 Ensure the ID is included
           accountName: newAccount.accountName,
           amount: newAccount.amount,
-          balance: newAccount.balance,
         }
       });
   } catch (error) {
       console.error("Server error:", error);
       res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Add this to your backend code
+app.get("/add-accounts", async (req, res) => {
+  try {
+    const accounts = await AccountModel.find()
+    res.status(200).json(accounts);
+  } catch (error) {
+    console.error("Error fetching accounts:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

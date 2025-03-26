@@ -8,12 +8,14 @@ const EmailVerification = () => {
   const email = localStorage.getItem("email") || ""; // Get email from localStorage
   const [otpSent, setOtpSent] = useState(false);
   const otpRequestInProgress = useRef(false); // Prevents multiple OTP requests
+  const [modalStep, setModalStep] = useState(null); // State to control modal steps
 
   useEffect(() => {
     if (email && !otpSent && !otpRequestInProgress.current) {
       sendOtp(email);
     }
   }, [email, otpSent]);
+
 
   const sendOtp = async (emailToSend) => {
     if (!emailToSend.trim() || otpRequestInProgress.current) return;
@@ -66,7 +68,7 @@ const EmailVerification = () => {
           onChangeEmail={handleChangeEmail} // Navigates to the Register page
         />
 
-        {modalStep && (
+        {modalStep !== null && (
           <div className="fixed inset-0 backdrop-blur bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-10 rounded-3xl shadow-lg w-[580px] relative">
               {/* Close Button */}

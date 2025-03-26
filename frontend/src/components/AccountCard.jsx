@@ -4,7 +4,7 @@ import EyeClose from '../assets/eyeclosed.svg';
 import Withdraw from '../components/Withdraw';
 import FundWallet from '../components/FundWallet';
 
-const AccountCard = ({ title, amount = 0, openModal, closeModal }) => {
+const AccountCard = ({ openModal, closeModal }) => {
     const [isHidden, setIsHidden] = useState(true);
     const[accountName, setAccountName] = useState('');
     const[amounts, setAmounts] = useState(0);
@@ -23,7 +23,7 @@ const AccountCard = ({ title, amount = 0, openModal, closeModal }) => {
     return (
         <div className='bg-green-100 p-7 rounded-lg text-center shadow-md'>
             {/* Account Info */}
-            {title?(
+            {/* {title?(
             <div className='flex flex-row justify-between'>
                 <div>
                     <p className='text-indigo-900'>{title}</p>
@@ -35,7 +35,7 @@ const AccountCard = ({ title, amount = 0, openModal, closeModal }) => {
                     </button>
                 </div>
             </div>
-            ):(
+            ):( */}
             <div className='flex flex-row justify-between'>
                 <div>
                     <p className='text-indigo-900'>{accountName}</p>
@@ -47,7 +47,7 @@ const AccountCard = ({ title, amount = 0, openModal, closeModal }) => {
                     </button>
                 </div>
             </div>
-            )}
+            
         
 
             {/* Action Buttons */}

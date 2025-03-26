@@ -37,13 +37,10 @@ const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
         },
       });
 
-      const addAccount = (newAccount) => {
-  const existingAccounts = JSON.parse(localStorage.getItem("accounts")) || []; // Retrieve previous accounts
-  const updatedAccounts = [...existingAccounts, newAccount]; // Append new data
-
-  localStorage.setItem("accounts", JSON.stringify(updatedAccounts)); // Save back to local storage
-  setAccounts(updatedAccounts); // Update state
-};
+      // localStorage.setItem("accountName",response.data.newAccount.accountName);
+      // localStorage.setItem("amount",response.data.newAccount.amount);
+      localStorage.setItem("account_id",response.data.newAccount._id);
+      console.log("Response:", response.data);
 
       // Update the account list on the AccountPage
       updateAccounts((prevAccounts) => [...prevAccounts, response.data.newAccount]);
