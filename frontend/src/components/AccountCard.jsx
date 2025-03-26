@@ -1,4 +1,4 @@
-import React, { use, useState,useEffect } from 'react';
+import React, {useState,useEffect } from 'react';
 import EyeOpen from '../assets/eyeopen.svg';
 import EyeClose from '../assets/eyeclosed.svg';
 import Withdraw from '../components/Withdraw';
@@ -12,8 +12,8 @@ const AccountCard = ({ title, amount = 0, openModal, closeModal }) => {
 
     return (
         <div className='bg-green-100 p-7 rounded-lg text-center shadow-md'>
-            {/* Account Info */}
-            {title?(
+            {/* Account Info  */}
+             {title?(
             <div className='flex flex-row justify-between'>
                 <div>
                     <p className='text-indigo-900'>{title}</p>

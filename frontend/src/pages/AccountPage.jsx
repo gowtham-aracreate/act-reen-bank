@@ -65,14 +65,13 @@ const AccountPage = ({ pageTitle }) => {
   
         setAccounts((prevAccounts) => [...prevAccounts, response.data.newAccount]);
         setSelectedAccount(response.data.newAccount._id);
-        
         openModal(<CreatedSuccess key={response.data.newAccount._id} closeModal={closeModal} userData={data} />);
       })
       .catch((error) => {
         console.error("Error adding account:", error.response?.data || error.message);
       });
   };
-  
+
 
   const filteredTransactions = transactions.filter(transaction => transaction.accountId === selectedAccount);
 
@@ -85,7 +84,7 @@ const AccountPage = ({ pageTitle }) => {
               <div className="ml-5 grid grid-cols-4 gap-4 mt-2">
                 {accounts.map((account) => (
                   <div key={account._id} onClick={() => setSelectedAccount(account._id)} className={`cursor-pointer ${selectedAccount === account._id ? "border-l-7 border-blue-900" : ""}`}>
-                    <AccountCard title={account.accountName} amount={account.amount} openModal={openModal} closeModal={closeModal}/>
+                    <AccountCard title={account.accountName} amount={account.amount} openModal={openModal} closeModal={closeModal} />
                   </div>
                 ))}
                 <div className="bg-gray-300 text-white px-10 rounded-lg cursor-pointer">
@@ -144,6 +143,6 @@ const AccountPage = ({ pageTitle }) => {
       </ModalLayout>
     </Layout>
   );
-};
+}
 
 export default AccountPage;
