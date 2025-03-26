@@ -9,16 +9,6 @@ const AccountCard = ({ title, amount = 0, openModal, closeModal }) => {
     const [isHidden, setIsHidden] = useState(true);
     const[accountName, setAccountName] = useState('');
     const[amounts, setAmounts] = useState(0);
-    
-    useEffect(() => {
-        const storedAccountName = localStorage.getItem("accountName");
-        const storedAmount = localStorage.getItem("amounts");
-
-        if (storedAccountName && storedAmount) {
-            setAccountName(storedAccountName);
-            setAmounts(storedAmount);
-        }
-    }, []);
 
     return (
         <div className='bg-green-100 p-7 rounded-lg text-center shadow-md'>

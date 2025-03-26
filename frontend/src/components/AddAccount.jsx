@@ -38,8 +38,6 @@ const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
       });
 
       // Store the added account in localStorage
-      localStorage.setItem("accountName", response.data.newAccount.accountName);
-      localStorage.setItem("amounts", response.data.newAccount.amount);
       localStorage.setItem("account_id", response.data.newAccount._id);
 
       // Update the account list on the AccountPage

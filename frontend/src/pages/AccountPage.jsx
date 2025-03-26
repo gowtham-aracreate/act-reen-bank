@@ -84,7 +84,7 @@ const AccountPage = ({ pageTitle }) => {
             <div className="pt-10 flex flex-row justify-between">
               <div className="ml-5 grid grid-cols-4 gap-4 mt-2">
                 {accounts.map((account) => (
-                  <div key={account._id} onClick={() => setSelectedAccount(account._id)}>
+                  <div key={account._id} onClick={() => setSelectedAccount(account._id)} className={`cursor-pointer ${selectedAccount === account._id ? "border-l-7 border-blue-900" : ""}`}>
                     <AccountCard title={account.accountName} amount={account.amount} openModal={openModal} closeModal={closeModal}/>
                   </div>
                 ))}
