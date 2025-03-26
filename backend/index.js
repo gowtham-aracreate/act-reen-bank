@@ -23,7 +23,7 @@ const connectDB = async () => {
 connectDB();
 
 
-// User Schema
+// USER SCHEMA FOR REGISTER AND ACCOUNT DETAILS PAGE :
 const UserSchema = new mongoose.Schema({
   username: { type: String },
   email: { type: String },
@@ -36,6 +36,8 @@ const UserSchema = new mongoose.Schema({
 // User Model
 const User = mongoose.model("UserDetails", UserSchema);
 
+
+// OTP SCHEMA :
 // OTP Schema (Stores OTPs separately)
 const OtpSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true }, // Each email has one OTP record
@@ -126,7 +128,7 @@ app.post("/verify-otp", async (req, res) => {
 });
 
 
-//REGISTER PAGE
+//REGISTER PAGE :
 app.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -158,8 +160,7 @@ app.post("/register", async (req, res) => {
 });
 
 
-
-// ADD ACCOUNT DETAILS PAGE
+// ADD ACCOUNT DETAILS PAGE :
 app.post("/acc_details", async (req, res) => {
   try {
     console.log("Received request body:", req.body);
@@ -200,7 +201,8 @@ app.post("/acc_details", async (req, res) => {
   }
 });
 
-// LOGIN PAGE
+
+// LOGIN PAGE :
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -234,7 +236,50 @@ app.post("/login", async (req, res) => {
 });
 
 
+// ACCOUNTS PAGE :
+// Define the Account schema
+const AccountSchema = new mongoose.Schema({
+  accountName: { type: String, required: true },
+  amount: { type: Number, required: true },
+});
 
+const AccountModel = mongoose.model("Account", AccountSchema);
+
+// Get All Accounts
+app.get("/accounts", async (req, res) => {
+  try {
+    const accounts = await AccountModel.find();
+    res.status(200).json(accounts);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Add Account
+app.post("/add-accounts", async (req, res) => {
+  try {
+    const { accountName, amount } = req.body;
+    if (!accountName || !amount) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    const newAccount = new AccountModel({ accountName, amount });
+    await newAccount.save();
+    
+    res.status(201).json({
+      success: true,
+      message: "Account added successfully",
+      newAccount: {
+        _id: newAccount._id // 🔹 Ensure the ID is included
+      }
+  });
+
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+// FUND WALLET MODAL :
 // Fund Wallet Schema (Updated)
 const FundSchema = new mongoose.Schema({
   user_id: { type: String, required: true },
@@ -299,61 +344,13 @@ app.post("/fund-wallet", async (req, res) => {
 });
 
 
-
-const AccountSchema = new mongoose.Schema({
-  accountName: { type: String, required: true },
-  amount: { type: Number, required: true },
-});
-
-const AccountModel = mongoose.model("Account", AccountSchema);
-
-// Add Account API
-app.post("/add-accounts", async (req, res) => {
-  try {
-      let { accountName, amount } = req.body;
-      if (!accountName || !amount) {
-          return res.status(400).json({ error: "Missing required fields" });
-      }
-      
-      // Save account to database (example)
-      const newAccount = new AccountModel({ accountName, amount});
-      await newAccount.save();
-
-      console.log("New Account Added:", newAccount); // Log account ID
-
-      res.status(201).json({
-        success: true,
-        message: "Account added successfully",
-        newAccount: {
-          _id: newAccount._id, // 🔹 Ensure the ID is included
-          accountName: newAccount.accountName,
-          amount: newAccount.amount,
-        }
-      });
-  } catch (error) {
-      console.error("Server error:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// Add this to your backend code
-app.get("/add-accounts", async (req, res) => {
-  try {
-    const accounts = await AccountModel.find()
-    res.status(200).json(accounts);
-  } catch (error) {
-    console.error("Error fetching accounts:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
+//WITHDRAW :
 const WithdrawSchema = new mongoose.Schema({
   accountName: { type: String, required: true },
   amount: { type: Number, required: true },
   balance: { type: Number, required: true },
   timestamp: { type: Date, default: Date.now }, // Add balance field
 });
-
 
 const WithdrawModel = mongoose.model('Withdraw', WithdrawSchema);
 
@@ -393,7 +390,8 @@ app.post('/withdraw', async (req, res) => {
   }
 });
 
-// UPDATE PAGE
+
+// PROFILE PAGE :
 app.post("/profile", async (req, res) => {
   try {
     const { id, phone_no, gender } = req.body;
@@ -416,7 +414,7 @@ app.post("/profile", async (req, res) => {
   }
 });
 
-// Get All Users (for testing purposes)
+// Get All Users (for testing purposes) :
 app.get("/get_user", async (req, res) => {
   try {
     const data = await User.find();

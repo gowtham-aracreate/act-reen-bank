@@ -4,26 +4,16 @@ import EyeClose from '../assets/eyeclosed.svg';
 import Withdraw from '../components/Withdraw';
 import FundWallet from '../components/FundWallet';
 
-const AccountCard = ({ openModal, closeModal }) => {
+
+const AccountCard = ({ title, amount = 0, openModal, closeModal }) => {
     const [isHidden, setIsHidden] = useState(true);
-    const[accountName, setAccountName] = useState('');
-    const[amounts, setAmounts] = useState(0);
-
-    useEffect(() => {
-        const storedAccountName = localStorage.getItem("accountName")
-        const storedAmount = localStorage.getItem("amounts") 
-
-        if (storedAccountName && storedAmount) {
-            setAccountName(storedAccountName);
-            setAmounts(storedAmount);
-        }
-    }, []);
-    
+    const [accountName, setAccountName] = useState('');
+    const [amounts, setAmounts] = useState(0);
 
     return (
         <div className='bg-green-100 p-7 rounded-lg text-center shadow-md'>
-            {/* Account Info */}
-            {/* {title?(
+            {/* Account Info  */}
+             {title?(
             <div className='flex flex-row justify-between'>
                 <div>
                     <p className='text-indigo-900'>{title}</p>
@@ -35,7 +25,7 @@ const AccountCard = ({ openModal, closeModal }) => {
                     </button>
                 </div>
             </div>
-            ):( */}
+            ):(
             <div className='flex flex-row justify-between'>
                 <div>
                     <p className='text-indigo-900'>{accountName}</p>
@@ -47,7 +37,7 @@ const AccountCard = ({ openModal, closeModal }) => {
                     </button>
                 </div>
             </div>
-            
+            )}
         
 
             {/* Action Buttons */}

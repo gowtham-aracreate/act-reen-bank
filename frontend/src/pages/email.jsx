@@ -67,42 +67,6 @@ const EmailVerification = () => {
           }}
           onChangeEmail={handleChangeEmail} // Navigates to the Register page
         />
-
-        {modalStep !== null && (
-          <div className="fixed inset-0 backdrop-blur bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-10 rounded-3xl shadow-lg w-[580px] relative">
-              {/* Close Button */}
-              <button
-                onClick={handleCloseModal}
-                className="absolute top-4 right-4 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition"
-              >
-                <img src={Close} alt="Close" className="w-5 h-5" />
-              </button>
-
-              {modalStep === 1 && (
-                <div>
-                  <h2 className="text-green-600 text-3xl font-bold mb-6">
-                    Reset Password
-                  </h2>
-                  <form onSubmit={handleResetSubmit}>
-                    <input
-                      type="email"
-                      placeholder="Enter your Email"
-                      className="border w-full p-3 rounded-lg"
-                      required
-                    />
-                    <button
-                      type="submit"
-                      className="bg-green-600 text-white w-full py-3 rounded-lg mt-4"
-                    >
-                      Reset Password
-                    </button>
-                  </form>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </Layout>
   );

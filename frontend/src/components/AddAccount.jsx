@@ -6,20 +6,19 @@ const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
   const [accountName, setAccountName] = useState("");
   const [amount, setAmount] = useState("");
   const [errors, setErrors] = useState({});
-  
   const handleAdd = async () => {
     let newErrors = {};
-
+  
     // Validate account name
     if (!accountName.trim()) {
       newErrors.accountName = "Account name is required.";
     }
-
+  
     // Validate amount
     if (!amount || isNaN(amount) || Number(amount) <= 0) {
       newErrors.amount = "Please enter a valid amount.";
     }
-
+  
     // If there are errors, stop here
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -44,7 +43,7 @@ const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
 
       // Update the account list on the AccountPage
       updateAccounts((prevAccounts) => [...prevAccounts, response.data.newAccount]);
-
+      console.log("Response Data:", response.data);
 
       // Close the AddAccount modal
       closeModal();
@@ -60,6 +59,7 @@ const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
       console.error("Error adding account:", error);
     }
   };
+  
 
   return (
     <div className="bg-white p-6 w-[300px] rounded-lg">
@@ -85,7 +85,7 @@ const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
           type="number"
           placeholder="Enter amount"
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => setAmount(e.target.value || "")} // Handle empty input
           className="w-full border-2 border-gray-400 shadow-md rounded-lg px-3 py-2"
         />
         {errors.amount && <p className="text-red-600 text-sm mt-1">{errors.amount}</p>}
@@ -100,6 +100,10 @@ const AddAccount = ({ openModal, closeModal, updateAccounts }) => {
           Add
         </button>
       </div>
+
+      {errors.submit && (
+        <p className="text-red-600 text-sm mt-3">{errors.submit}</p>
+      )}
     </div>
   );
 };
