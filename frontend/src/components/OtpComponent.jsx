@@ -38,7 +38,7 @@ const OtpComponent = ({ title, buttonText, initialEmail, onVerify, onResendOtp }
       const response = await fetch("http://localhost:3001/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({email, otp }),
       });
       const data = await response.json();
       if (data.success) {

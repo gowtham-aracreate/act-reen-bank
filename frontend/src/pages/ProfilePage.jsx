@@ -102,6 +102,7 @@ const ProfilePage = ({pageTitle}) => {
     }
   };
 
+
   return (
     <Layout pageTitle={pageTitle}>
       <div className="flex">
@@ -220,7 +221,7 @@ const ProfilePage = ({pageTitle}) => {
       </div>
       
       {/* Use ResetPasswordModal Component */}
-      <ResetPasswordModal modalStep={modalStep} setModalStep={setModalStep} email={email} />
+      <ResetPasswordModal modalStep={modalStep} setModalStep={setModalStep} email={email} source="profile" />
 
     </Layout>
   );

@@ -5,7 +5,7 @@ import LockIcon from "../assets/lock.svg";
 import UnlockIcon from "../assets/unlock.svg";
 import OtpComponent from "../components/OtpComponent";
 
-const ResetPasswordModal = ({ modalStep, setModalStep, email}) => {
+const ResetPasswordModal = ({ modalStep, setModalStep, email, source}) => {
   // const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState(""); // Error state
@@ -37,126 +37,109 @@ const ResetPasswordModal = ({ modalStep, setModalStep, email}) => {
 
   // Function to check if the email exists before sending OTP
   // Send OTP API
-  // const handleEmailSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (email !== profileEmail) {
-  //     setError("Entered email does not match your profile email.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch("http://localhost:3001/send-otp", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ email }),
-  //     });
-
-  //     const data = await response.json();
-  //     if (response.ok) {
-  //       alert("OTP sent successfully!");
-  //       setModalStep(2); // Move to OTP step
-  //       setError(""); // Clear any previous error
-  //     } else {
-  //       setErrors({ email: data.message});
-  //     }
-  //   } catch (error) {
-  //     console.error("Error sending OTP:", error);
-  //     setErrors("Failed to send OTP. Try again.");
-  //   }
-  // };
-
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
-  
-    console.log("Comparing emails:");
     console.log("Stored Email:", email);
     console.log("Entered Email:", enteredEmail);
   
-    if (enteredEmail !== email) {
-      setError("Entered email does not match your profile email."); // ✅ Set error message
-      return; // Stop further execution
+    const finalEmail = source === "profile" ? email : enteredEmail; // Ensure correct email is used
+  
+    if (source === "profile" && enteredEmail !== email) {
+      setError("Entered email does not match your profile email.");
+      return;
     }
   
     try {
       const response = await fetch("http://localhost:3001/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: enteredEmail }),
+        body: JSON.stringify({ email: finalEmail }),
       });
   
       const data = await response.json();
       if (response.ok) {
         alert("OTP sent successfully!");
-        setModalStep(2); // Move to OTP step
-        setError(""); // Clear error when successful
+        setModalStep(2);
+        setError(""); 
       } else {
         setError(data.message || "Failed to send OTP.");
       }
     } catch (error) {
       console.error("Error sending OTP:", error);
-      setError("❌ Failed to send OTP. Try again.");
+      setError("Failed to send OTP. Try again.");
     }
   };
   
-  
-
+  // Function to handle OTP verification
   const handleVerify = () => {
     setModalStep(3); // Move to password reset step
   };
 
-  // Reset Password API
+  const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+  };
+  
+
+
   const handleChangePassword = async (e) => {
     e.preventDefault(); // Prevent page refresh
-
+  
     setErrors({}); // Clear previous errors
-
-    // Validate passwords
-    if (password.length < 6) {
+  
+    const finalEmail = enteredEmail || email; // Ensure correct email is used
+    console.log("Sending reset request for Email:", finalEmail);
+  
+    // Validate password strength
+    if (!validatePassword(password)) {
       setErrors({
-        confirmPassword: "Password must be at least 6 characters long.",
+        confirmPassword:
+          "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.",
       });
       return;
     }
-
+  
+    // Validate password match
     if (password !== confirmPassword) {
       setErrors({ confirmPassword: "Passwords do not match." });
       return;
     }
-
+  
     try {
       const response = await fetch("http://localhost:3001/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, newPassword: password }),
+        body: JSON.stringify({ email: finalEmail, newPassword: password }),
       });
-
+  
       const data = await response.json();
-
-      if (data.success) {
+      console.log("Reset Password API Response:", data);
+  
+      if (response.ok && data.success) {
         alert("Password has been reset successfully!");
         setModalStep(4); // Move to success modal
       } else {
-        setErrors({ confirmPassword: data.message });
+        setErrors({ confirmPassword: data.message || "Reset failed. Try again." });
       }
     } catch (error) {
       console.error("Reset Password Error:", error);
       setErrors({ confirmPassword: "Something went wrong. Try again." });
     }
   };
-
+  
   if (!modalStep) return null; // Don't render if modal is closed
 
   return (
     <div className="fixed inset-0 backdrop-blur bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-10 rounded-3xl shadow-[0_11px_80px_rgba(90,297,94,0.5)] w-[580px] relative">
-        {/* Close Button */}
-        {/* <button
+        {/* Close Button */} 
+        <button
           onClick={handleCloseModal}
           className="absolute top-4 right-4 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition"
         >
           <img src={Close} alt="Close" className="w-5 h-5" />
-        </button> */}
+        </button>
 
         {/* Step 1: Enter Email */}
         {modalStep === 1 && (
@@ -199,7 +182,7 @@ const ResetPasswordModal = ({ modalStep, setModalStep, email}) => {
                 const response = await fetch("http://localhost:3001/send-otp", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ email }),
+                  body: JSON.stringify({ email: enteredEmail || email }),
                 });
 
                 const data = await response.json();
@@ -212,7 +195,7 @@ const ResetPasswordModal = ({ modalStep, setModalStep, email}) => {
                 console.error("Error resending OTP:", error);
               }
             }}
-            initialEmail={email}
+            initialEmail={enteredEmail || email}
             setOtp={setOtp} // Pass OTP state update function
           />
         )}

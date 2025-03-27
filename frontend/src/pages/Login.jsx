@@ -14,6 +14,7 @@ import ResetPasswordModal from "../components/ResetPasswordModal";
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [resetEmail, setResetEmail] = useState(""); // Store email for reset password
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [isHidden, setIsHidden] = useState(true);
@@ -34,6 +35,7 @@ const Login = () => {
         const response = await axios.post("http://localhost:3001/login", { email, password });
 
         if (response.data.success) {
+          localStorage.setItem("email", email); // Save email for later OTP use
           navigate("/overviewpage");
         }
       } catch (error) {
@@ -88,6 +90,8 @@ const Login = () => {
                   type="email"
                   placeholder="Enter your Email"
                   className="border w-full p-3 pr-10 rounded-lg text-gray-700"
+                  // value={email}
+                  // onChange={(e) => setEmail(e.target.value)}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -156,7 +160,7 @@ const Login = () => {
       </div>
 
       {/* Reset Password Modal */}
-      {modalStep && <ResetPasswordModal modalStep={modalStep} setModalStep={setModalStep} />}
+      {modalStep && <ResetPasswordModal modalStep={modalStep} setModalStep={setModalStep} email={resetEmail} source="login"/>}
     </div>
   );
 };
