@@ -8,12 +8,14 @@ const EmailVerification = () => {
   const email = localStorage.getItem("email") || ""; // Get email from localStorage
   const [otpSent, setOtpSent] = useState(false);
   const otpRequestInProgress = useRef(false); // Prevents multiple OTP requests
+  const [modalStep, setModalStep] = useState(null); // State to control modal steps
 
   useEffect(() => {
     if (email && !otpSent && !otpRequestInProgress.current) {
       sendOtp(email);
     }
   }, [email, otpSent]);
+
 
   const sendOtp = async (emailToSend) => {
     if (!emailToSend.trim() || otpRequestInProgress.current) return;
