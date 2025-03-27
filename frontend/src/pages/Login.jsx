@@ -2,38 +2,29 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import EmailIcon from "../assets/envelope.svg";
-import LockIcon from "../assets/lock.svg"; // Locked icon
-import UnlockIcon from "../assets/unlock.svg"; // Unlocked icon
+import LockIcon from "../assets/lock.svg";
+import UnlockIcon from "../assets/unlock.svg";
 import Logo from "../assets/logo.svg";
 import Facebook from "../assets/facebook 2.svg";
 import Twitter from "../assets/twitter 2.svg";
 import Instagram from "../assets/instagram 2.svg";
 import BackgroundImage from "../assets/background.svg";
+import ResetPasswordModal from "../components/ResetPasswordModal";
 
 const Login = () => {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
+  const [resetEmail, setResetEmail] = useState(""); // Store email for reset password
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
-  const [isHidden, setIsHidden] = useState(true); // For password visibility
-
-  const validateEmail = (email) => {
-    const emailRegex = /^\S+@\S+\.\S+$/;
-    return emailRegex.test(email);
-  };
-
-  const validatePassword = (password) => {
-    const passwordRegex =
-      /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
-    return passwordRegex.test(password);
-  };
+  const [isHidden, setIsHidden] = useState(true);
+  const [modalStep, setModalStep] = useState(null); // State for modal
 
   const handleLogin = async (e) => {
     e.preventDefault();
     let newErrors = { email: "", password: "" };
 
-    if (!validateEmail(email)) {
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
       newErrors.email = "Invalid email format";
     }
 
@@ -44,20 +35,18 @@ const Login = () => {
         const response = await axios.post("http://localhost:3001/login", { email, password });
 
         if (response.data.success) {
+          localStorage.setItem("email", email); // Save email for later OTP use
           navigate("/overviewpage");
         }
       } catch (error) {
         console.error("Error logging in user", error);
-
         if (error.response) {
-          console.log("Backend Response:", error.response.data);
-          const {data} = error.response;
-
-          if (data.message === "Invaild Email") {
+          const { data } = error.response;
+          if (data.message === "Invalid Email") {
             setErrors({ email: "Invalid Email", password: "" });
           } else if (data.message === "Invalid Password") {
             setErrors({ email: "", password: "Invalid Password" });
-          }else {
+          } else {
             setErrors({ email: "Invalid Email", password: "Invalid Password" });
           }
         } else {
@@ -68,7 +57,10 @@ const Login = () => {
   };
 
   return (
-    <div className="relative flex justify-center items-center h-screen bg-center" style={{ backgroundImage: `url(${BackgroundImage})` }}>
+    <div
+      className="relative flex justify-center items-center h-screen bg-center"
+      style={{ backgroundImage: `url(${BackgroundImage})` }}
+    >
       <div className="absolute inset-0 bg-green-200 opacity-20"></div>
       <div className="pr-30 flex justify-between items-center">
         <div className="relative z-10 flex flex-col justify-center p-24">
@@ -98,6 +90,8 @@ const Login = () => {
                   type="email"
                   placeholder="Enter your Email"
                   className="border w-full p-3 pr-10 rounded-lg text-gray-700"
+                  // value={email}
+                  // onChange={(e) => setEmail(e.target.value)}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -130,7 +124,11 @@ const Login = () => {
                     className="w-5 h-5"
                   />
                 </button>
-                <span className="absolute right-14 top-3 text-green-600 text-sm cursor-pointer">
+                {/* Forgot Password Link */}
+                <span
+                  className="absolute right-14 top-3 text-green-600 text-sm cursor-pointer"
+                  onClick={() => setModalStep(1)} // Open modal
+                >
                   <span className="border-r-2 border-gray-400 pr-2 mr-2"></span>
                   Forgot?
                 </span>
@@ -139,18 +137,30 @@ const Login = () => {
             </div>
 
             {/* Login Button */}
-            <button type="submit" className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg hover:bg-green-700 transition duration-300">
+            <button
+              type="submit"
+              className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg hover:bg-green-700 transition duration-300"
+            >
               Login
             </button>
 
             {/* Redirect to Register */}
             <p className="text-sm mt-4 mb-8">
               Don't Have an Account?
-              <span className="text-green-600 cursor-pointer font-medium" onClick={() => navigate("/register")}> Register.</span>
+              <span
+                className="text-green-600 cursor-pointer font-medium"
+                onClick={() => navigate("/register")}
+              >
+                {" "}
+                Register.
+              </span>
             </p>
           </form>
         </div>
       </div>
+
+      {/* Reset Password Modal */}
+      {modalStep && <ResetPasswordModal modalStep={modalStep} setModalStep={setModalStep} email={resetEmail} source="login"/>}
     </div>
   );
 };

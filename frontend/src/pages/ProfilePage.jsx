@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import ArrowrightTrans from "../assets/trans-arrow.svg";
@@ -6,17 +6,38 @@ import EyeOpen from "../assets/eyeopen.svg";
 import EyeClose from "../assets/eyeclosed.svg";
 import User from "../assets/userimg.svg";
 import EditIcon from "../assets/edit.svg";
-import Close from "../assets/close.svg";
+// import Close from "../assets/close.svg";
 import OtpComponent from "../components/OtpComponent";
+import ResetPasswordModal from "../components/ResetPasswordModal";
 
 const transactions = [
-  { id: 1, name: "Oluwaben Jamin", date: "06.Mar.2023 - 09:39", amount: -10000 },
+  {
+    id: 1,
+    name: "Oluwaben Jamin",
+    date: "06.Mar.2023 - 09:39",
+    amount: -10000,
+  },
   { id: 2, name: "Oluwaben Jamin", date: "06.Mar.2023 - 09:39", amount: 10000 },
-  { id: 3, name: "Oluwaben Jamin", date: "06.Mar.2023 - 09:39", amount: -10000 },
+  {
+    id: 3,
+    name: "Oluwaben Jamin",
+    date: "06.Mar.2023 - 09:39",
+    amount: -10000,
+  },
   { id: 4, name: "Oluwaben Jamin", date: "06.Mar.2023 - 09:39", amount: 10000 },
-  { id: 5, name: "Oluwaben Jamin", date: "06.Mar.2023 - 09:39", amount: -10000 },
+  {
+    id: 5,
+    name: "Oluwaben Jamin",
+    date: "06.Mar.2023 - 09:39",
+    amount: -10000,
+  },
   { id: 6, name: "Oluwaben Jamin", date: "06.Mar.2023 - 09:39", amount: 10000 },
-  { id: 7, name: "Oluwaben Jamin", date: "06.Mar.2023 - 09:39", amount: -10000 },
+  {
+    id: 7,
+    name: "Oluwaben Jamin",
+    date: "06.Mar.2023 - 09:39",
+    amount: -10000,
+  },
   { id: 8, name: "Oluwaben Jamin", date: "06.Mar.2023 - 09:39", amount: 10000 },
 ];
 
@@ -33,18 +54,22 @@ const ProfilePage = ({pageTitle}) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({ password: "", confirmPassword: "" });
 
-  useEffect(() =>{
-      //Retrieve user details from local storage
-      const StoredUsername = localStorage.getItem('username')
-      const StoredEmail = localStorage.getItem('email');
-      const StoredPhoneNo = localStorage.getItem('phone_no');
-      const StoredGender = localStorage.getItem('gender');
-      setUserName(StoredUsername);
-      setEmail(StoredEmail);
-      setPhoneNo(StoredPhoneNo);
-      setGender(StoredGender);
-    },[]);
+  useEffect(() => {
+    //Retrieve user details from local storage
+    const StoredUsername = localStorage.getItem("username");
+    const StoredEmail = localStorage.getItem("email");
+    const StoredPhoneNo = localStorage.getItem("phone_no");
+    const StoredGender = localStorage.getItem("gender");
 
+    
+  // Debugging: Check if email is retrieved correctly
+  console.log("Retrieved Email from localStorage:", StoredEmail);
+
+    setUserName(StoredUsername);
+    setEmail(StoredEmail);
+    setPhoneNo(StoredPhoneNo);
+    setGender(StoredGender);
+  }, []);
 
   // Function to handle reset password button click
   const handleResetPasswordClick = () => {
@@ -76,6 +101,7 @@ const ProfilePage = ({pageTitle}) => {
       setErrors({ ...errors, confirmPassword: "Passwords do not match." });
     }
   };
+
 
   return (
     <Layout pageTitle={pageTitle}>
@@ -109,7 +135,9 @@ const ProfilePage = ({pageTitle}) => {
                 <p className="text-lg font-medium text-gray-700">{email}</p>
               </div>
               <div className="border-b pb-4 text-left">
-                <p className="text-sm font-semibold text-green-600">Phone Number</p>
+                <p className="text-sm font-semibold text-green-600">
+                  Phone Number
+                </p>
                 <p className="text-lg font-medium text-gray-700">{phone_no}</p>
               </div>
               <div className="text-left">
@@ -122,7 +150,7 @@ const ProfilePage = ({pageTitle}) => {
             <div className="mt-6">
               <button
                 className="bg-green-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-600 transition cursor-pointer"
-                onClick={handleResetPasswordClick} // Open modal on click
+                onClick={() => setModalStep(1)} // Open modal
               >
                 Reset Password
               </button>
@@ -160,7 +188,11 @@ const ProfilePage = ({pageTitle}) => {
           <div className="mt-10 ml-20">
             <div className="flex">
               <h2 className="text-2xl font-bold">Transactions</h2>
-              <img className="pl-72" src={ArrowrightTrans} alt="Right Arrow Icon" />
+              <img
+                className="pl-72"
+                src={ArrowrightTrans}
+                alt="Right Arrow Icon"
+              />
             </div>
             <div className="pt-3 pb-6">
               {transactions.map((transaction) => (
@@ -170,7 +202,9 @@ const ProfilePage = ({pageTitle}) => {
                     <p>{transaction.date}</p>
                     <p
                       className={`font-bold ${
-                        transaction.amount < 0 ? "text-red-600" : "text-green-600"
+                        transaction.amount < 0
+                          ? "text-red-600"
+                          : "text-green-600"
                       }`}
                     >
                       {transaction.amount < 0
@@ -185,95 +219,9 @@ const ProfilePage = ({pageTitle}) => {
           </div>
         </div>
       </div>
-
-      {/* Modal */}
-{modalStep && (
-  <div className="fixed inset-0 backdrop-blur bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-white p-10 rounded-3xl shadow-lg w-[580px] relative">
-      {/* Close Button */}
-      <button
-  onClick={handleCloseModal}
-  className="absolute top-4 right-4 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition"
->
-  <img src={Close} alt="Close" className="w-5 h-5" />
-</button>
-
-
-      {modalStep === 1 && (
-        <div>
-          <h2 className="text-green-600 text-3xl font-bold mb-6">Reset Password</h2>
-          <form onSubmit={handleResetSubmit}>
-            <input
-              type="email"
-              placeholder="Enter your Email"
-              className="border w-full p-3 rounded-lg"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-green-600 text-white w-full py-3 rounded-lg mt-4"
-            >
-              Reset Password
-            </button>
-          </form>
-        </div>
-      )}
-
-      {modalStep === 2 && (
-        <OtpComponent
-          title="Enter OTP"
-          buttonText="Confirm"
-          onVerify={handleVerify}
-        />
-      )}
-
-      {modalStep === 3 && (
-        <div>
-          <h2 className="text-green-600 text-3xl font-bold mb-6">Enter New Password</h2>
-          <form onSubmit={handleChangePassword}>
-            <input
-              type="password"
-              placeholder="Enter Password"
-              className="border w-full p-3 rounded-lg"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              className="border w-full p-3 rounded-lg mt-4"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-2">{errors.confirmPassword}</p>
-            )}
-            <button
-              type="submit"
-              className="bg-green-600 text-white w-full py-3 rounded-lg mt-4"
-            >
-              Change Password
-            </button>
-          </form>
-        </div>
-      )}
-
-      {modalStep === 4 && (
-        <div>
-          <h2 className="text-green-600 text-3xl font-bold mb-6">Password Changed Successfully</h2>
-          <button
-            onClick={handleCloseModal}
-            className="bg-green-600 text-white w-full py-3 rounded-lg mt-4"
-          >
-            Close
-          </button>
-        </div>
-      )}
-    </div>
-  </div>
-)}
+      
+      {/* Use ResetPasswordModal Component */}
+      <ResetPasswordModal modalStep={modalStep} setModalStep={setModalStep} email={email} source="profile" />
 
     </Layout>
   );

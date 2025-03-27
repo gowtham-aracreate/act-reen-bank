@@ -66,7 +66,7 @@ app.post("/send-otp", async (req, res) => {
 
     // Check if user exists
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, message: "Email is not registered. Please sign up first."});
 
     // Store OTP separately
     await Otp.findOneAndUpdate(
@@ -122,6 +122,41 @@ app.post("/verify-otp", async (req, res) => {
   } catch (error) {
       console.error("Server error in /verify-otp:", error);
       res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
+
+
+
+//Reset Password
+app.post("/reset-password", async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    console.log("Resetting password for:", email);
+
+    // // Validate input
+    // if (!email || !newPassword) {
+    //   return res.status(400).json({ success: false, message: "Email and new password are required." });
+    // }
+
+    // Find user in database
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    // Hash new password before saving
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password in database
+    await User.updateOne({ email }, { password: hashedPassword });
+
+    res.json({ success: true, message: "Password has been successfully reset!" });
+  } catch (error) {
+    console.error("Error in /reset-password:", error);
+    res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
 
