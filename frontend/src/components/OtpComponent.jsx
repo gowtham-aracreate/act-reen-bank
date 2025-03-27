@@ -21,22 +21,24 @@ const OtpComponent = ({ title, buttonText, initialEmail, onVerify, onResendOtp }
 
   const handleResend = () => {
     if (canResend) {
-      onResendOtp(email);
-      setTimer(45);
-      setCanResend(false);
+      onResendOtp(email); // Call the send-otp API
+      setTimer(45); // Reset the timer
+      setCanResend(false); // Disable resend until timer runs out
+      setError(""); // Clear any previous errors
     }
   };
 
   const handleChangeEmail = () => {
     navigate("/register"); // Redirect to the Register page
   };
+  
 
   const handleVerifyOtp = async () => {
     try {
       const response = await fetch("http://localhost:3001/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({email, otp }),
       });
       const data = await response.json();
       if (data.success) {
@@ -89,8 +91,7 @@ const OtpComponent = ({ title, buttonText, initialEmail, onVerify, onResendOtp }
       </p>
       <button
         onClick={handleVerifyOtp}
-        className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg"
-      >
+        className="bg-green-600 text-white w-full py-3 rounded-lg font-semibold text-lg">
         {buttonText}
       </button>
     </div>
